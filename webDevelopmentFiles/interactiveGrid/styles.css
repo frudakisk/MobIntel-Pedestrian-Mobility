@@ -4,6 +4,7 @@ dimensions we decide for the grid*/
   display: grid;
   grid-template-columns: repeat(25, 1fr);
   grid-template-rows: repeat(5, 1fr);
+  direction: rtl;
   gap: 1px;
 }
 

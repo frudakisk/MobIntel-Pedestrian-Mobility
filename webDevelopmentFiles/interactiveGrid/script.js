@@ -1,7 +1,7 @@
 class Cell{
   /*This class will focus on the cells within the grid.
   Each cell will contain its own information that is callable */
-  constructor(row, col, location, corners, center, sensor_distances, calculated_RSSI, actual_RSSI, score) {
+  constructor(row, col, location, corners, center, sensor_distances, calculated_RSSI, avg_RSSI, score, hasSensor) {
     this.row = row;
     this.col = col;
     this.location = location;
@@ -9,9 +9,9 @@ class Cell{
     this.center = center;
     this.sensor_distances = sensor_distances;
     this.calculated_RSSI = calculated_RSSI;
-    this.actual_RSSI = actual_RSSI;
-    //this.score = Math.floor(Math.random() * (1001 - 300) + 300);
-    this.score = score
+    this.avg_RSSI = avg_RSSI;
+    this.score = score;
+    this.hasSensor = hasSensor;
   }
 
   handleClick() {
@@ -21,13 +21,15 @@ class Cell{
     for now, we just print the location*/
     console.log(`Cell clicked: (${this.row}, ${this.col})`);
     console.log(`Calculated RSSI ${this.calculated_RSSI}`);
+    console.log(`Corners ${this.corners}`)
     let score = normalize(this.score);
-    console.log(`Cell Score: ${score}`);
+    console.log(`Cell Score: ${this.score}`);
     let HTML = `Calculated RSSI: ${this.calculated_RSSI} <br />
-                       Actual RSSI: ${this.actual_RSSI} <br />
+                       Average RSSI: ${this.avg_RSSI} <br />
                        Sensor Distances: ${this.sensor_distances}<br />
                        Cell clicked: (${this.row}, ${this.col}) <br />
-                       Score: ${this.score}`;
+                       Score: ${this.score} <br />
+                       hasSensor : ${this.hasSensor}`;
     return HTML;
   }
 };
@@ -41,7 +43,7 @@ function fetchData() {
   /*This function reads in a json form of the grid data that was
   prepared by phillip susman. This function also processes the data
   to be injected into each cell */
-  fetch('./sampleGrid.json')
+  fetch('./sampleGrid_json.json')
   .then(response => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -53,52 +55,40 @@ function fetchData() {
     //Will have to MANUALLY change columns and rows templates to whatever dimensions we decide for the grid
     let gridLength = 25;
     let gridWidth = 5;
-    processData(jsonData, gridLength, gridWidth);
+    processData(jsonData);
+    resetCells();
   })
   .catch(error => {
     console.error('Error:', error);
   });
 }
 
-function processData(data, gridLength, gridWidth){
-  /*This function needs to process the data of each array
-  and create the information for each cell.
-  Each cell is corresponding to a tuple of (row#, col#) and we have to 
-  flip the row# because if how html builds a grid and how python builds a
-  grid. In python, origin is at the bottom left (0,0)
-  In html, the origin is at the top left. */
-  //for loop for row
-  //for loop for column
-  total = 0;
-  let dataLength = Object.keys(data).length;
-  console.log(dataLength); //printing length
-  while(total < dataLength){
-    for(i=0; i < gridWidth; i++){
-      let rowNum = i + ((gridWidth-1)-(i*2)); //this is the translation //4 should be adjusted with gridWidth
-      for(j=0; j < gridLength; j++){
-        //for 170 cells, i need to change the row to the same number
-        let info = data[total]
-
-        let infoLocation = info.location.slice(1,-1); //get rid of ()
-        infoLocation = infoLocation.split(","); //turn to array [row,col]
-        console.log(infoLocation);
-        infoLocation[0] = rowNum; //change row number
-        infoLocation = "(" + infoLocation.toString() + ")"; //turn back to string
-        data[total].location = infoLocation; //put back in json data
-        console.log(data[total]);
-        createGridCell(rowNum, j, data[total].location,
-          data[total].corners, data[total].center, data[total].sensor_distances,
-          data[total].calculated_RSSI, data[total].actual_RSSI, data[total].score)
-        total ++;
-      }
-    }
+function processData(data){
+  let datalength = Object.keys(data).length;
+  for (i=datalength-1; i >= 0; i--){
+    console.log(data[i])
+    let infoLocation = data[i].location.slice(1,-1); //get rid of ()
+    infoLocation = infoLocation.split(","); //turn to array [row,col]
+    var rowNum = infoLocation[0];
+    var colNum = infoLocation[1];
+    var location = data[i].location;
+    let corners = data[i].corners;
+    let center = data[i].center;
+    let sensorDistances = data[i].sensor_distances;
+    let calculatedRssi = data[i].calculated_RSSI;
+    let actualRssi = data[i].avg_RSSI;
+    let score = data[i].score;
+    let hasSensor = data[i].hasSensor;
+    createGridCell(rowNum, colNum, location, corners, center, sensorDistances,
+      calculatedRssi, actualRssi, score, hasSensor);
   }
 }
 
-function createGridCell(row, column, location, corners, center, sensor_distances, calculated_RSSI, actual_RSSI, score){
+
+function createGridCell(row, column, location, corners, center, sensor_distances, calculated_RSSI, avg_RSSI, score, hasSensor){
   /*Creates an instance of Cell class and also
   creates a cell element that will be apart of the grid*/
-  const cell = new Cell(row, column, location, corners, center, sensor_distances, calculated_RSSI, actual_RSSI, score);
+  const cell = new Cell(row, column, location, corners, center, sensor_distances, calculated_RSSI, avg_RSSI, score, hasSensor);
   const cellElement = document.createElement('div');
   cellElement.className = 'cell';
   cellElement.textContent = 'Cell';
@@ -119,19 +109,47 @@ function showPopup(cell, cellElement) {
 
 // Resets cells to default state (background).
 function resetCells() {
+  let min_score = 100;
+  let max_score = 0;
   const cells = document.getElementsByClassName('cell');
+  let sensor_id = document.getElementById("sensor-select").value;
+  console.log(sensor_id);
+
   // Loop through the selected elements
   for (let i = 0; i < cells.length; i++) {
-    console.log(cells[i]);
     cells[i].style.backgroundColor = `rgba(255,140,0,1)`;
-    let score = normalize(cells[i].cellinfo.score);
+    let score_JSON = cells[i].cellinfo.score;
+    score_JSON = score_JSON.replace(/'/g, '"');
+    let score = JSON.parse(score_JSON);
+    score = score[sensor_id];
+    cells[i].cellinfo.sensor_score = score;
+    if (score == -9999) {
+      continue;
+    }
+    if (score >= max_score) {
+      max_score = score;
+    }
+    if (score <= min_score) {
+      min_score = score;
+    }
+  }
+
+  console.log(max_score);
+  console.log(min_score);
+
+  for (let i = 0; i < cells.length; i++) {
+    let score = normalize(cells[i].cellinfo.sensor_score, min_score, max_score);
+    /*console.log(cells[i].cellinfo.sensor_score);
+    console.log(score);*/
     cells[i].style.backgroundColor = `rgba(255,140,0, ${score})`;
-    // cells[i].style.filter = `brightness(${score}%)`;
   }
 }
 
-function normalize(val, max = 1000, min = 0) {
-  return (val - min) / (max - min);
+function normalize(val, min_score, max_score) {
+  if (val == -9999) {
+    return 0;
+  }
+  return (val - min_score) / (max_score - min_score);
 }
 
 
@@ -144,6 +162,11 @@ window.addEventListener('click', (event) => {
   }
 });
 
-fetchData()
+fetchData();
+
+document.getElementById('sensor-select').addEventListener('change', function(e) {
+  resetCells();
+  return false;
+});
 
 
