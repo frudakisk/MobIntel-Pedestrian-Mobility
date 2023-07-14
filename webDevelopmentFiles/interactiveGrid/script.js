@@ -149,7 +149,7 @@ function normalize(val, min_score, max_score) {
   if (val == -9999) {
     return 0;
   }
-  return (val - min_score) / (max_score - min_score);
+  return (val - min_score) / (max_score - min_score) * (1 - 0.3) + 0.3;
 }
 
 
