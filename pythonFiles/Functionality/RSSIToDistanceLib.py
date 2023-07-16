@@ -60,8 +60,7 @@ def rssiToDistanceV2(rssi):
     if rssi > -46:
         return 1.0
     elif rssi < -61:
-        print("Caught rssi value:", rssi)
-        print("rssi values lower than -61 are not considered when converting")
+        #rssi values lower tha -61 are not considered when converting. resulting in 30m
         return 30.0
     elif df.empty:
         #look for row that has rssi next highest
