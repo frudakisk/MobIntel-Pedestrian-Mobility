@@ -1,13 +1,13 @@
 from math import pi, cos
 from geopy import distance
-import folium, numpy as np, sys, pandas as pd
+import folium, numpy as np, sys, pandas as pd, webbrowser
 
 sys.path.append("pythonFiles")
 
 from Functionality import TrilaterationLib as tl
 from Functionality import PathLossLib as pl
 
-df500 = pd.read_csv("datasets/block_500_only.csv", engine='python')
+
 
 # This is the class for a grid square
 class GridSquare:
@@ -81,6 +81,16 @@ def visualizeGrid(origin, lat_dist, long_dist, meridianDist, parallelDist):
     locationList=[loc, right]
     folium.PolyLine(locations=locationList).add_to(m) #create the lines along the parallel (left to right lines)
   return m
+
+
+def showGrid(m, filePath):
+  """
+  m: the folium Map object
+  filePath: The path to which you want to save your html map
+  This function will create a visual rendering of the given map object
+  """
+  m.save(filePath)
+  webbrowser.open(filePath, new=2)
 
 
 def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance):
@@ -192,12 +202,12 @@ def getEmitterCoords(df):
 
 
 # This function gets the position of emitters within the grid
-def getEmitterPositions(emitter_coords, latList, longList):
+def getEmitterPositions(emitter_coords, latList, longList, grid_corners):
   emitter_position = {}
   for i, j in emitter_coords.items():
     # calls getDeviceGridSpot to find where the emitter would be in the grid
     # ex: emitter at 22, 4.0 might be at (4, 16) (random spot not accurate)
-    loc = getDeviceGridSpot(j, latList, longList)
+    loc = getDeviceGridSpot(j, latList, longList, grid_corners)
     # if -1 is returned, then that sensor/x pair is not in the grid
     if loc == -1:
       emitter_position.update({i: -1})
@@ -251,13 +261,16 @@ def getDeviceGridSpot(device_loc, lats, longs, grid_corners):
   return device_loc_index
 
 
-def makeGrid(grid_corners, latList, longList, emitter_locs, df): #KYLE CHANGED THE SIGNATURE OF THIS FUNCTION!!!!!!!!!!!!!!!!!!
+def makeGrid(grid_corners, latList, longList, emitter_locs, df):
+  """
+  the df should be df500 right now since that is what we have been working with so far
+  """
   RSSI_sensor_list = ('57', '20', '05', '34', '22', '06', '31', '36', '35') #no RSSI values, excluded 04, 54, 40, 42, 33 from original list
   ref_sensor_list = ('57', '20', '54', '40', '34', '22', '42', '31', '33', '36', '35') #missing ref sensors
 
   grid = np.zeros(grid_corners.shape, dtype=GridSquare)
-  df_mean = df500.mean(axis=0)
-  df_mode = df500.mode(axis=0)
+  df_mean = df.mean(axis=0)
+  df_mode = df.mode(axis=0)
   itr = np.nditer(grid, flags=['multi_index', 'refs_ok'])
   for x in itr:
     is_emitter = False
@@ -307,7 +320,7 @@ def makeGrid(grid_corners, latList, longList, emitter_locs, df): #KYLE CHANGED T
         scores.update({i: -9999})
       # PHILLIP END------------------------------------------------------------------------------------------
       mode_RSSI.update({i: df_mode.at[0, 's'+i]})
-      df_unique = df500.drop_duplicates(subset=['s'+i])
+      df_unique = df.drop_duplicates(subset=['s'+i])
       df_unique = df_unique.reset_index()
       #display(df_unique)
       best_RSSI.update({i: -9999})
