@@ -25,7 +25,6 @@ def sensor_trim(probe):
     """
     probe_sorted = probe.loc[probe["isphysical"] != 1] # drop all physical MAC addresses
     probe_filtered = probe_sorted.drop(columns =["isphysical"]).reset_index() # drop irrelevant columns
-    print("Filtered size for sensor: ", probe_filtered.shape)
     return probe_filtered
 
 
@@ -38,7 +37,6 @@ def mac_count(pqfile, cutoff):
     Counts mac addresses and removes outlier above cutoff number. Retains
     speed even on smaller cutoffs but does not store actual count of machashes
     """
-    print("Rows before: ", pqfile.shape[0])
 
     # counts mac hash occurences, sets to true if greater than filter, false if not
     mac_count = pqfile.groupby("machash").count() > cutoff
@@ -54,9 +52,6 @@ def mac_count(pqfile, cutoff):
     outliers_removed = outliers_removed.rename(columns={"sensorid_x":"sensorid",
                                             "probingtime_x": "probingtime",
                                             "rssi_x": "rssi"})
-
-    print("Rows after: ", outliers_removed.shape[0])
-    print("Rows removed: ", pqfile.shape[0] - outliers_removed.shape[0])
 
     return outliers_removed
 
@@ -146,3 +141,17 @@ def newDetermineDuration(row, durationLimit):
         duration = deviceInSensorAreaDuration(probingTimesList, durationLimit)
         durationDict[key] = duration
         return str(durationDict)
+    
+
+def determineMacHashDuration(filename):
+    """
+    filename: a mobIntel parquet file
+    returns: a dataframe that contains all the probing times for a machash in a single row
+    A combination of functions so that we have a one liner whenever we want to
+    find the duration of machashes
+    """
+    df = read_file(filename)
+    df = sensor_trim(df)
+    df = groupByMacHash(df)
+    df["Duration"] = df.apply(lambda row : newDetermineDuration(row, 7), axis=1)
+    return df
