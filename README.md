@@ -5,14 +5,25 @@ This is where we will compile all out code that went towards this project. This 
 
 ## Table of Contents
 - How to Find Stuff
+
 This section will provide an overview of how our code is organized and where to expect to find things throughout the
 repository.
+
 - Libraries
+
 In this section, we will provide the names of each of the libraries created in this repo and with a short description
 of what the library is intended to be used for. Also, for each library, there will be a list of function names.
+
 - Drivers
+
 This section has all the drivers fo each of the libraries. Here, we will explain the intentions of some functions.
+
+- How to Use Libraries
+
+This section will explain how we import our libraries
+
 - other stuff
+
 This section includes misc. stuff 
 
 
@@ -122,3 +133,41 @@ sensors as well as separates the data into seprate categorize.
 * plotDateAgg(dateAgg)
 * plotInDepthWeek(dateAgg, hourAgg)
 * plotDays(dateAgg, hourAgg)
+
+
+### Drivers
+The purpose of the drivers is to showcase the functions within the library working
+the way we expect them to. Some drivers are shorter than others and do not show each
+function working separetly. This is because some drivers have functions that utilize the specific
+usecase of other functions within it. If the parent function works as expected, we can assume the child
+functions to be in working order.
+
+#### RSSITODistanceLibDriver
+
+#### PathLossLibDriver
+
+#### GridLibDriver
+
+#### TrilaterationLibDriver
+
+#### mLLibDriver
+
+#### DataFiltrationLibDriver
+
+#### ExploritoryAnalysisLibDriver
+
+
+### How to Use Libraries
+
+To use a library in the pythonFiles folder, we must first import the sys module, which is standard
+library in python. Then, we must use the path.append method to add in an extra path for our 
+system to search through when we are looking for libraries to use. Finally, we must call the library.
+The way that I do this is by first import from Functionality and the call the specific library I want.
+I usually give it an alias as well. Below is an example code block of what this would look like:
+
+```
+import sys
+sys.path.append("pythonFiles)
+
+from Functionality import GridLib as gl
+```
