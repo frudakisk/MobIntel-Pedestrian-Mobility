@@ -54,7 +54,9 @@ def visualizeGrid(origin, lat_dist, long_dist, meridianDist, parallelDist):
   lat_dist: how far, in meters, the grid will expand north
   long_dist: how far, in meters, the grid will expand east
   meridianDist: how many steps, in meters, are between captured meridian lines
-  parallelDistL how many steps, in meters, are between captured parallel lines"""
+  parallelDistL how many steps, in meters, are between captured parallel lines
+  Returns: a folium map onject
+  """
   latList, longList = createGrid(origin, lat_dist, long_dist, meridianDist, parallelDist)
   m = folium.Map(location=origin, width=2000, height=900, zoom_start=19, max_zoom=21)
   # parimeter = [origin,
@@ -424,3 +426,17 @@ def averageActualRSSI(emitter_locs, df, ref_sensor_list):
         RSSI.update({emitter_locs[f"{i}, {x}"]: mean})
       x += 4
   return RSSI
+
+
+def completeGrid(latList, longList, df500):
+  """
+  latList: list of latitude lines
+  longList: list of longitude lines
+  df500: should be the df500 file
+  """
+  coords_array = makeCoordsArray(latList, longList) # makes 2D array with all lat/long
+  grid_corners = getGridCorners(coords_array) # stores the corner coordinates of all grid squares
+  emitter_coords = getEmitterCoords(df500) # finds the coordinates of the all emitters
+  emitter_locs = getEmitterPositions(emitter_coords, latList, longList, grid_corners) # gets the location of emitters with in the grid
+  grid = makeGrid(grid_corners, latList, longList, emitter_locs, df500) # creates grid composed of GridSquare objects
+  return grid
