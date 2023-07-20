@@ -42,6 +42,9 @@ grid = gl.makeGrid(grid_corners, latList, longList, emitter_locs, df500) # creat
 print("Showing that grid[2][0] has a sensor in it")
 print(grid[2][0].hasSensor)
 
+estimated_device_loc = gl.gridLocalization(grid, df500, emitter_locs)
+print(estimated_device_loc)
+
 #export grid as csv
 gl.exportGridAsCsv(grid=grid, pathName="datasets/GridLibDriverGrid.csv")
 
