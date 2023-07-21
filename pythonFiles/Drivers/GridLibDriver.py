@@ -49,12 +49,19 @@ for i in range(len(grid)):
         if tile.hasSensor:
             print(tile.location)
 
+#Give me the corner values of cells [2][0] and [4][0]
+#x3 & x4 share latitiude, x2 a& x4 share longitudes
+print("cell (2,0) corners\n", grid[2][0].corners)
+print("cell (4,0) corners\n", grid[4][0].corners)
+print("cell (3,0) conrners\n", grid[3][0].corners)
+print("Showing all lines of latitude (parallels) should be 6\n", latList)
+
 
 
 # The following block demonstrates the gridLocalization function
 # For now, it outputs a single tuple representing a cell of the grid
-estimated_device_loc = gl.gridLocalization(grid, df500, emitter_locs)
-print(estimated_device_loc)
+#estimated_device_loc = gl.gridLocalization(grid, df500, emitter_locs)
+#print(estimated_device_loc)
 
 #export grid as csv
 gl.exportGridAsCsv(grid=grid, pathName="datasets/GridLibDriverGrid.csv")
@@ -62,7 +69,7 @@ gl.exportGridAsCsv(grid=grid, pathName="datasets/GridLibDriverGrid.csv")
 #converting csv file to json file
 csvFile = "datasets/GridLibDriverGrid.csv"
 jsonPath = "webDevelopmentFiles/interactiveGrid/grid_json.json"
-gl.csvTojson(csvFile, jsonPath, key="") #key= "" is the index number from each column in csv file
+gl.csvTojson(csvFile, jsonPath)
 
 
 

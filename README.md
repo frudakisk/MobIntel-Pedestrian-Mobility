@@ -75,7 +75,7 @@ can create any size grid on an location on the earth.
 * sensorMaxCoords(sensorList, latList, longList)
 * containsSensor(tile, sensorList, latList, longList)
 * averageActualRSSI(emitter_locs, df, ref_sensor_list)
-* csvTojson(csvFilePath, jsonPath, key)
+* csvTojson(csvFilePath, jsonPath)
 
 #### TrilaterationLib
 This library includes functionality that was used to trilaterate points on map. This library uses other
@@ -168,7 +168,7 @@ I usually give it an alias as well. Below is an example code block of what this 
 
 ```
 import sys
-sys.path.append("pythonFiles)
+sys.path.append("pythonFiles")
 
 from Functionality import GridLib as gl
 ```

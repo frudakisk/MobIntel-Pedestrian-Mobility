@@ -336,7 +336,7 @@ def makeGrid(grid_corners, latList, longList, emitter_locs, df):
                             calculated_RSSI, avg_RSSI, -99, -99, is_emitter, scores , [])
 
     #FOLLOWING BLOCK IS FROM KYLE FOR HASSENSOR ------------------------------------
-    #get list of sensors that have true as value function won't run, currently commenting out - Conor
+    #get list of sensors that have true as value
     hasSensorList = list()
     hasSensor = containsSensor(tile=grid_square, sensorList=RSSI_sensor_list, latList=latList, longList=longList)
     for key, val in hasSensor.items():
@@ -407,6 +407,8 @@ def containsSensor(tile, sensorList, latList, longList):
   """
   tileDict = {}
   maxCoordsDict = sensorMaxCoords(sensorList, latList, longList)
+  print("Showing maxCoodsDict")
+  print(maxCoordsDict)
   for sensor, coord in maxCoordsDict.items():
     if coord == tile.corners[3]:
       tileDict.update({sensor: True})
