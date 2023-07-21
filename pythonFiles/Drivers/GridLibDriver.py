@@ -19,9 +19,9 @@ print(newLoc)
 print(distance.distance(newLoc, origin).meters)
 
 #visualize grid
-m = gl.visualizeGrid(origin=origin, lat_dist=20, long_dist=5, 
+m = gl.visualizeGrid(origin=origin, lat_dist=25, long_dist=5, 
                      meridianDist=1, parallelDist=1)
-gl.showGrid(m, "media/maps/driverGrid.html")
+#gl.showGrid(m, "media/maps/driverGrid.html")
 
 #create grid
 latList, longList = gl.createGrid(origin=origin, latDistance=25, longDistance=5,

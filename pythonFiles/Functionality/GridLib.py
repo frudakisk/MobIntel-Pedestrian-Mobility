@@ -107,6 +107,8 @@ def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adju
   This function requires an origin point as a tuple,
   the distance(meters) of how far up in longitude from the origin as a positive integer,
   and the distance of how far right in latitude we stray from the origin as a positive integer"""
+  latDistance = latDistance - 1
+  longDistance = longDistance - 1
   longList = list()
   latList = list()
   longList.append(origin[1])
@@ -142,6 +144,7 @@ def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adju
 # This function makes a 2D array of all possible lat/long combinations
 def makeCoordsArray(lats, longs):
   all_coords = np.zeros((len(lats),len(longs)), dtype=tuple)
+  print("Printing all_coords:\n", all_coords)
   for i in range(len(lats)):
     for j in range(len(longs)):
       all_coords[i][j] = (lats[i], longs[j])
@@ -155,6 +158,7 @@ def makeCoordsArray(lats, longs):
 def getGridCorners(coord_array):
   # makes a new array with the same shape as the coord array
   grid_array = np.zeros(coord_array.shape, dtype=tuple)
+  print("What is the shape of grid_array\n", coord_array.shape) #6,26 should be 5,25
   itr = np.nditer(grid_array, flags=['multi_index', 'refs_ok'])
   for x in itr:
     # Following code saves coords of the 4 corners of each grid position
@@ -271,6 +275,7 @@ def makeGrid(grid_corners, latList, longList, emitter_locs, df):
   ref_sensor_list = ('57', '20', '54', '40', '34', '22', '42', '31', '33', '36', '35') #missing ref sensors
 
   grid = np.zeros(grid_corners.shape, dtype=GridSquare)
+  print("What is the shape of the grid\n", grid_corners.shape) #6,26 when it should be 5,25
   df_mean = df.mean(axis=0)
   df_mode = df.mode(axis=0)
   itr = np.nditer(grid, flags=['multi_index', 'refs_ok'])
@@ -407,8 +412,6 @@ def containsSensor(tile, sensorList, latList, longList):
   """
   tileDict = {}
   maxCoordsDict = sensorMaxCoords(sensorList, latList, longList)
-  print("Showing maxCoodsDict")
-  print(maxCoordsDict)
   for sensor, coord in maxCoordsDict.items():
     if coord == tile.corners[3]:
       tileDict.update({sensor: True})
@@ -430,12 +433,18 @@ def averageActualRSSI(emitter_locs, df, ref_sensor_list):
   return RSSI
 
 
-def completeGrid(latList, longList, df500):
+def completeGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance, df500):
   """
-  latList: list of latitude lines
-  longList: list of longitude lines
+  origin: a tuple of coordinates where the bottom left of the grid will start
+  latDistance: how far we want the latitide lines to go
+  longDistance: how far we want the longitidue lines to go
+  adjustedMeridianDistance: the space between meridian lines
+  adjustedParallelDistance: the space between parallel lines
   df500: should be the df500 file
   """
+  latList, longList = createGrid(origin=origin, latDistance=latDistance, longDistance=longDistance,
+                                  adjustedMeridianDistance=adjustedMeridianDistance, 
+                                  adjustedParallelDistance=adjustedParallelDistance)
   coords_array = makeCoordsArray(latList, longList) # makes 2D array with all lat/long
   grid_corners = getGridCorners(coords_array) # stores the corner coordinates of all grid squares
   emitter_coords = getEmitterCoords(df500) # finds the coordinates of the all emitters
