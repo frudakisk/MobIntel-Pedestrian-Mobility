@@ -541,23 +541,29 @@ def gridLocalization(grid, df500, emitter_locs):
   return score_mean.index[0]
 
 
-def csvTojson(csvFilePath, jsonPath, key):
-    """
-    csvFilePath: The path that the current csv file is located
-    jsonPath: the path where you want the new json file to be located
-    key: the string value of the key for the json file to use. This is 
-    typically a column name from the csv file
-    Converts a csv file to a json file with the key parameter
-    selected by the user
-    """
-    data = {}
+def csvTojson(csvFilePath, jsonPath):
+  """
+  csvFilePath: The path that the current csv file is located
+  jsonPath: the path where you want the new json file to be located
+  Converts a csv file to a json file 
+  """
+  data = []
 
-    with open(csvFilePath, encoding='utf-8') as csvf:
-        csvReader = csv.DictReader(csvf)
-        for rows in csvReader:
-            key = rows[key] #change to what we want key to be
-            data[key] = rows
+  with open(csvFilePath, encoding='utf-8') as csvf:
+    csvReader = csv.DictReader(csvf)
+    for rows in csvReader:
+      del rows[""]
+      for key, value in rows.items():
+        if key == "mode_RSSI":
+          rows[key] = int(value)
+        elif key == "best_RSSI":
+          rows[key] = int(value)
+        elif key == "is_emitter":
+          if value == "False":
+            rows[key] = False
+          elif value == "True":
+            rows[key] = True
+      data.append(rows)
 
-
-    with open(jsonPath, 'w', encoding='utf-8') as jsonf:
-        jsonf.write(json.dumps(data, indent=4))
+  with open(jsonPath, 'w', encoding='utf-8') as jsonf:
+    jsonf.write(json.dumps(data, indent=4))

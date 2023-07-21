@@ -75,6 +75,7 @@ can create any size grid on an location on the earth.
 * sensorMaxCoords(sensorList, latList, longList)
 * containsSensor(tile, sensorList, latList, longList)
 * averageActualRSSI(emitter_locs, df, ref_sensor_list)
+* csvTojson(csvFilePath, jsonPath, key)
 
 #### TrilaterationLib
 This library includes functionality that was used to trilaterate points on map. This library uses other
