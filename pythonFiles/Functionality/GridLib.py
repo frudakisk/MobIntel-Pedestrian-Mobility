@@ -59,11 +59,6 @@ def visualizeGrid(origin, lat_dist, long_dist, meridianDist, parallelDist):
   """
   latList, longList = createGrid(origin, lat_dist, long_dist, meridianDist, parallelDist)
   m = folium.Map(location=origin, width=2000, height=900, zoom_start=19, max_zoom=21)
-  # parimeter = [origin,
-  #              (latList[-1],origin[1]),
-  #              (latList[-1], longList[-1]),
-  #              (origin[0], longList[-1]),
-  #              origin]
   parimeter = [origin,
                (origin[0], longList[-1]),
                (latList[-1], longList[-1]),
@@ -107,8 +102,8 @@ def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adju
   This function requires an origin point as a tuple,
   the distance(meters) of how far up in longitude from the origin as a positive integer,
   and the distance of how far right in latitude we stray from the origin as a positive integer"""
-  latDistance = latDistance - 1
-  longDistance = longDistance - 1
+  #latDistance = latDistance - 1
+  #longDistance = longDistance - 1
   longList = list()
   latList = list()
   longList.append(origin[1])
@@ -143,10 +138,13 @@ def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adju
 
 # This function makes a 2D array of all possible lat/long combinations
 def makeCoordsArray(lats, longs):
-  all_coords = np.zeros((len(lats),len(longs)), dtype=tuple)
+  latsLength = len(lats[:-1]) #i know you no like this phillip im sorry
+  longsLength = len(longs[:-1])
+  all_coords = np.zeros((latsLength,longsLength), dtype=tuple)
   print("Printing all_coords:\n", all_coords)
-  for i in range(len(lats)):
-    for j in range(len(longs)):
+  for i in range(latsLength):
+    for j in range(longsLength):
+      print(j)
       all_coords[i][j] = (lats[i], longs[j])
   return all_coords
 
@@ -158,7 +156,7 @@ def makeCoordsArray(lats, longs):
 def getGridCorners(coord_array):
   # makes a new array with the same shape as the coord array
   grid_array = np.zeros(coord_array.shape, dtype=tuple)
-  print("What is the shape of grid_array\n", coord_array.shape) #6,26 should be 5,25
+  print("What is the shape of grid_array\n", coord_array.shape) #should be 5,25
   itr = np.nditer(grid_array, flags=['multi_index', 'refs_ok'])
   for x in itr:
     # Following code saves coords of the 4 corners of each grid position
