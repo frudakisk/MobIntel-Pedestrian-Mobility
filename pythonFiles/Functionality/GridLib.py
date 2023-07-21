@@ -1,6 +1,6 @@
 from math import pi, cos
 from geopy import distance
-import folium, numpy as np, sys, pandas as pd, webbrowser, random
+import folium, numpy as np, sys, pandas as pd, webbrowser, random, csv, json
 
 sys.path.append("pythonFiles")
 
@@ -445,6 +445,13 @@ def completeGrid(latList, longList, df500):
 
 
 def gridLocalization(grid, df500, emitter_locs):
+  """
+  grid:
+  df500:
+  emitter_locs:
+  Returns: 
+  This block of code deals with guess a device's location in the grid
+  """
   RSSI_sensor_list = ('57', '20', '05', '34', '22', '06', '31', '36', '35') #no RSSI values, excluded 04, 54, 40, 42, 33 from original list
 
   # AVG BEGIN ----------------------------------------------------------------------------------
@@ -532,3 +539,25 @@ def gridLocalization(grid, df500, emitter_locs):
   print('Estimation error from comparing:', round(np.sqrt(lat_dist**2 + long_dist**2), 2), 'meters')
 
   return score_mean.index[0]
+
+
+def csvTojson(csvFilePath, jsonPath, key):
+    """
+    csvFilePath: The path that the current csv file is located
+    jsonPath: the path where you want the new json file to be located
+    key: the string value of the key for the json file to use. This is 
+    typically a column name from the csv file
+    Converts a csv file to a json file with the key parameter
+    selected by the user
+    """
+    data = {}
+
+    with open(csvFilePath, encoding='utf-8') as csvf:
+        csvReader = csv.DictReader(csvf)
+        for rows in csvReader:
+            key = rows[key] #change to what we want key to be
+            data[key] = rows
+
+
+    with open(jsonPath, 'w', encoding='utf-8') as jsonf:
+        jsonf.write(json.dumps(data, indent=4))

@@ -43,7 +43,7 @@ function fetchData() {
   /*This function reads in a json form of the grid data that was
   prepared by phillip susman. This function also processes the data
   to be injected into each cell */
-  fetch('./sampleGrid_json.json')
+  fetch('./grid_json.json')
   .then(response => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
