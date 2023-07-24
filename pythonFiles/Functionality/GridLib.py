@@ -58,12 +58,9 @@ def visualizeGrid(origin, lat_dist, long_dist, meridianDist, parallelDist):
   Returns: a folium map onject
   """
   latList, longList = createGrid(origin, lat_dist, long_dist, meridianDist, parallelDist)
+  latList = latList[:-1]
+  longList = longList[:-1]
   m = folium.Map(location=origin, width=2000, height=900, zoom_start=19, max_zoom=21)
-  # parimeter = [origin,
-  #              (latList[-1],origin[1]),
-  #              (latList[-1], longList[-1]),
-  #              (origin[0], longList[-1]),
-  #              origin]
   parimeter = [origin,
                (origin[0], longList[-1]),
                (latList[-1], longList[-1]),
@@ -107,6 +104,8 @@ def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adju
   This function requires an origin point as a tuple,
   the distance(meters) of how far up in longitude from the origin as a positive integer,
   and the distance of how far right in latitude we stray from the origin as a positive integer"""
+  #latDistance = latDistance - 1
+  #longDistance = longDistance - 1
   longList = list()
   latList = list()
   longList.append(origin[1])
@@ -140,11 +139,11 @@ def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adju
 
 
 # This function makes a 2D array of all possible lat/long combinations
-def makeCoordsArray(lats, longs):
-  all_coords = np.zeros((len(lats),len(longs)), dtype=tuple)
-  for i in range(len(lats)):
-    for j in range(len(longs)):
-      all_coords[i][j] = (lats[i], longs[j])
+def makeCoordsArray(latList, longList):
+  all_coords = np.zeros((len(latList),len(longList)), dtype=tuple)
+  for i in range(len(latList)):
+    for j in range(len(longList)):
+      all_coords[i][j] = (latList[i], longList[j])
   return all_coords
 
 
@@ -155,36 +154,23 @@ def makeCoordsArray(lats, longs):
 def getGridCorners(coord_array):
   # makes a new array with the same shape as the coord array
   grid_array = np.zeros(coord_array.shape, dtype=tuple)
+  print("What is the shape of grid_array\n", coord_array.shape) #should be 5,25
   itr = np.nditer(grid_array, flags=['multi_index', 'refs_ok'])
   for x in itr:
     # Following code saves coords of the 4 corners of each grid position
     # The corners are always saved in the same order
     # That is, bottom left, bottom right, top left, top right
-
-    # This statement deals with the very last grid spot i.e. (19, 169)
-    if (itr.multi_index[0] == grid_array.shape[0] - 1) & (itr.multi_index[1] == grid_array.shape[1] - 1):
-      grid_array[itr.multi_index] = (coord_array[itr.multi_index[0] - 1, itr.multi_index[1] - 1],
-                            coord_array[itr.multi_index[0] - 1, itr.multi_index[1]],
-                            coord_array[itr.multi_index[0], itr.multi_index[1] - 1],
-                            coord_array[itr.multi_index[0], itr.multi_index[1]])
-    # This statement deals with the last grid row
-    elif itr.multi_index[0] == grid_array.shape[0] - 1:
+    # ignores the cells in top row and last column
+    if (itr.multi_index[0] != grid_array.shape[0] - 1) & (itr.multi_index[1] != grid_array.shape[1] - 1):
       grid_array[itr.multi_index] = (coord_array[itr.multi_index],
-                                coord_array[itr.multi_index[0], itr.multi_index[1] + 1],
-                                coord_array[itr.multi_index[0] - 1, itr.multi_index[1]],
-                                coord_array[itr.multi_index[0] - 1, itr.multi_index[1] + 1])
-    # This statement deals with the last grid column
-    elif itr.multi_index[1] == grid_array.shape[1] - 1:
-      grid_array[itr.multi_index] = (coord_array[itr.multi_index[0], itr.multi_index[1] - 1],
-                            coord_array[itr.multi_index[0], itr.multi_index[1]],
-                            coord_array[itr.multi_index[0] + 1, itr.multi_index[1] - 1],
-                            coord_array[itr.multi_index[0] + 1, itr.multi_index[1]])
-    # This statement deals with the rest
-    else:
-      grid_array[itr.multi_index] = (coord_array[itr.multi_index],
-                                    coord_array[itr.multi_index[0], itr.multi_index[1] + 1],
-                                    coord_array[itr.multi_index[0] + 1, itr.multi_index[1]],
-                                    coord_array[itr.multi_index[0] + 1, itr.multi_index[1] + 1])
+                                  coord_array[itr.multi_index[0], itr.multi_index[1] + 1],
+                                  coord_array[itr.multi_index[0] + 1, itr.multi_index[1]],
+                                  coord_array[itr.multi_index[0] + 1, itr.multi_index[1] + 1])
+      
+  # deletes the top row and last column
+  # just needed them to get the corners for the edge cells
+  grid_array = np.delete(grid_array, grid_array.shape[0] - 1, 0)
+  grid_array = np.delete(grid_array, grid_array.shape[1] - 1, 1)
 
   return grid_array
 
@@ -206,6 +192,8 @@ def getEmitterCoords(df):
 # This function gets the position of emitters within the grid
 def getEmitterPositions(emitter_coords, latList, longList, grid_corners):
   emitter_position = {}
+  latList = latList[:-1]
+  longList = longList[:-1]
   for i, j in emitter_coords.items():
     # calls getDeviceGridSpot to find where the emitter would be in the grid
     # ex: emitter at 22, 4.0 might be at (4, 16) (random spot not accurate)
@@ -225,11 +213,13 @@ def getEmitterPositions(emitter_coords, latList, longList, grid_corners):
 # It returns a tuple of 4 coords representing the 4 corners of the grid square
 # the device is in
 # If it is not in bounds, it returns -1
-def getDeviceGridSpot(device_loc, lats, longs, grid_corners):
+def getDeviceGridSpot(device_loc, latList, longList, grid_corners):
   lat_index = 0
-  if (max(lats) >= device_loc[0]) & (min(lats) <= device_loc[0]):
-    for i in range(len(lats)):
-      if (device_loc[0] > lats[i]):
+  latList = latList[:-1]
+  longList = longList[:-1]
+  if (max(latList) >= device_loc[0]) & (min(latList) <= device_loc[0]):
+    for i in range(len(latList)):
+      if (device_loc[0] > latList[i]):
         lat_index = i
   else:
     #print("Inputted coordinates are out of range of grid latitude")
@@ -237,19 +227,19 @@ def getDeviceGridSpot(device_loc, lats, longs, grid_corners):
     return -1
 
   long_index = 0
-  if (max(longs) >= device_loc[1]) & (min(longs) <= device_loc[1]):
-    for i in range(len(longs)):
-      if (device_loc[1] > longs[i]):
+  if (max(longList) >= device_loc[1]) & (min(longList) <= device_loc[1]):
+    for i in range(len(longList)):
+      if (device_loc[1] > longList[i]):
         long_index = i
   else:
     #print("Inputted coordinates are out of range of grid longitude")
     #print("Please set new coordinates")
     return -1
 
-  coord_1 = (lats[lat_index], longs[long_index])
-  coord_2 = (lats[lat_index], longs[long_index + 1])
-  coord_3 = (lats[lat_index + 1], longs[long_index])
-  coord_4 = (lats[lat_index + 1], longs[long_index + 1])
+  coord_1 = (latList[lat_index], longList[long_index])
+  coord_2 = (latList[lat_index], longList[long_index + 1])
+  coord_3 = (latList[lat_index + 1], longList[long_index])
+  coord_4 = (latList[lat_index + 1], longList[long_index + 1])
   device_coords = (coord_1, coord_2, coord_3, coord_4)
 
   # this checks if the device coords match with a grid spot
@@ -269,8 +259,11 @@ def makeGrid(grid_corners, latList, longList, emitter_locs, df):
   """
   RSSI_sensor_list = ('57', '20', '05', '34', '22', '06', '31', '36', '35') #no RSSI values, excluded 04, 54, 40, 42, 33 from original list
   ref_sensor_list = ('57', '20', '54', '40', '34', '22', '42', '31', '33', '36', '35') #missing ref sensors
+  latList = latList[:-1]
+  longList = longList[:-1]
 
   grid = np.zeros(grid_corners.shape, dtype=GridSquare)
+  print("What is the shape of the grid\n", grid_corners.shape) #6,26 when it should be 5,25
   df_mean = df.mean(axis=0)
   df_mode = df.mode(axis=0)
   itr = np.nditer(grid, flags=['multi_index', 'refs_ok'])
@@ -382,6 +375,7 @@ def sensorMaxCoords(sensorList, latList, longList):
   within our grid."""
   maxCoordsDict = {}
   sensorLocations = sensorLocationsDict(sensorList)
+
   for sensor, coords in sensorLocations.items():
     for i in range(len(latList)):
       if(latList[i] > coords[0]):
@@ -405,10 +399,9 @@ def containsSensor(tile, sensorList, latList, longList):
   the given tile Cell. Will return a dictionary with key as sensor and value
   as a boolean that indicates if the sensor is within the tiles border
   """
+
   tileDict = {}
   maxCoordsDict = sensorMaxCoords(sensorList, latList, longList)
-  print("Showing maxCoodsDict")
-  print(maxCoordsDict)
   for sensor, coord in maxCoordsDict.items():
     if coord == tile.corners[3]:
       tileDict.update({sensor: True})
@@ -430,12 +423,18 @@ def averageActualRSSI(emitter_locs, df, ref_sensor_list):
   return RSSI
 
 
-def completeGrid(latList, longList, df500):
+def completeGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance, df500):
   """
-  latList: list of latitude lines
-  longList: list of longitude lines
+  origin: a tuple of coordinates where the bottom left of the grid will start
+  latDistance: how far we want the latitide lines to go
+  longDistance: how far we want the longitidue lines to go
+  adjustedMeridianDistance: the space between meridian lines
+  adjustedParallelDistance: the space between parallel lines
   df500: should be the df500 file
   """
+  latList, longList = createGrid(origin=origin, latDistance=latDistance, longDistance=longDistance,
+                                  adjustedMeridianDistance=adjustedMeridianDistance, 
+                                  adjustedParallelDistance=adjustedParallelDistance)
   coords_array = makeCoordsArray(latList, longList) # makes 2D array with all lat/long
   grid_corners = getGridCorners(coords_array) # stores the corner coordinates of all grid squares
   emitter_coords = getEmitterCoords(df500) # finds the coordinates of the all emitters

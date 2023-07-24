@@ -1,4 +1,5 @@
-import sys, pandas as pd
+import sys
+import pandas as pd
 from geopy import distance
 
 sys.path.append("pythonFiles")
@@ -10,26 +11,26 @@ origin = (26.713378, -80.05693981171936)
 
 #adjusted latitude
 newLoc = gl.adjustedLatitude(origin, 20)
-print(newLoc)
-print(distance.distance(newLoc, origin).meters)
+#print(newLoc)
+#print(distance.distance(newLoc, origin).meters)
 
 #adjusted longitude
 newLoc = gl.adjustedLongitude(origin, 20)
-print(newLoc)
-print(distance.distance(newLoc, origin).meters)
+#print(newLoc)
+#print(distance.distance(newLoc, origin).meters)
 
 #visualize grid
-m = gl.visualizeGrid(origin=origin, lat_dist=20, long_dist=5, 
+m = gl.visualizeGrid(origin=origin, lat_dist=25, long_dist=5, 
                      meridianDist=1, parallelDist=1)
-gl.showGrid(m, "media/maps/driverGrid.html")
+#gl.showGrid(m, "media/maps/driverGrid.html")
 
 #create grid
 latList, longList = gl.createGrid(origin=origin, latDistance=25, longDistance=5,
                                   adjustedMeridianDistance=1, adjustedParallelDistance=1)
-print(latList)
-print("Length of latList: ", len(latList))
-print(longList)
-print("length of longList: ", len(longList))
+#print(latList)
+#print("Length of latList: ", len(latList))
+#print(longList)
+#print("length of longList: ", len(longList))
 
 #The following short block of code is a representatation of how these functions should work together.
 #functions such as containsSensor, sensorMaxCoords, sensorLocationsDict, and averageActualRSSI are all used as
@@ -39,8 +40,6 @@ grid_corners = gl.getGridCorners(coords_array) # stores the corner coordinates o
 emitter_coords = gl.getEmitterCoords(df500) # finds the coordinates of the all emitters
 emitter_locs = gl.getEmitterPositions(emitter_coords, latList, longList, grid_corners) # gets the location of emitters with in the grid
 grid = gl.makeGrid(grid_corners, latList, longList, emitter_locs, df500) # creates grid composed of GridSquare objects
-print("Showing that grid[2][0] has a sensor in it")
-print(grid[2][0].hasSensor)
 
 print("Showing all locations that have a sensor in it")
 for i in range(len(grid)):
@@ -49,11 +48,14 @@ for i in range(len(grid)):
         if tile.hasSensor:
             print(tile.location)
 
+print(grid[2][0].hasSensor)
+print(grid[4][0].hasSensor)
+
 #Give me the corner values of cells [2][0] and [4][0]
 #x3 & x4 share latitiude, x2 a& x4 share longitudes
 print("cell (2,0) corners\n", grid[2][0].corners)
 print("cell (4,0) corners\n", grid[4][0].corners)
-print("cell (3,0) conrners\n", grid[3][0].corners)
+#print("cell (3,0) conrners\n", grid[3][0].corners)
 print("Showing all lines of latitude (parallels) should be 6\n", latList)
 
 

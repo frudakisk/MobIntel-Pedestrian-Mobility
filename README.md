@@ -6,13 +6,7 @@ This is where we will compile all out code that went towards this project. This 
 ## Table of Contents
 - How to Find Stuff
 
-This section will provide an overview of how our code is organized and where to expect to find things throughout the
-repository.
-
 - Libraries
-
-In this section, we will provide the names of each of the libraries created in this repo and with a short description
-of what the library is intended to be used for. Also, for each library, there will be a list of function names.
 
 - Drivers
 
@@ -28,6 +22,16 @@ This section includes misc. stuff
 
 
 ### How to Find Stuff
+
+In this readme file, we have categorized the abundant information as follows: On the highest level of organization, we have several
+parent folders that contain information. The parent folders are datasets, media, pythonFiles, and webDevelopmentFiles.
+Within the datasets folder, we have all the data sets that were used during our project. It also includes datasets that we 
+created during our project. Mostly, they were developed from pre existing data sets provided to us, but with analysis data added into them.
+In the media folder, we include things such as images and maps. Images is self explanatory, but the maps section includes html files that were
+generated via out trilateration algorithms, or our grid visualization efforts. The pythonFiles folder is the meat of this assignment. In here we have 3 seperate
+subfolders; developmentFolder, Drivers, and Functionality. The developmentFolder is a sort of playground where each of the developers can play with some of the
+code for development purposes. The Drivers folder contains python files that utilize the libraries developed throughout this process. It tests and makes sure that
+any updates given to any functionality still provide outputs that result in 0 errors. The Functionality folder holds all the libraries used in this project. For more detailed descriptions of the libraries, see the Libraries section of this readme file. Finally, the webDevelopmentFiles is the last parent folder. In this folder, we contain files that work with web development. Currently, there are two sub folders. Of the two, interactiveGrid is of larger importance. In this subfolder, we have the code for our interactive grid visualization. In the other subfolder, we have code written in php that revolved around various aspects of the project including trilateration, random waypointing, and other topics. 
 
 ### Libraries
 
