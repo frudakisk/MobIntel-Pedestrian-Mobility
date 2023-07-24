@@ -139,20 +139,11 @@ def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adju
 
 
 # This function makes a 2D array of all possible lat/long combinations
-def makeCoordsArray(lats, longs):
-<<<<<<< HEAD
-  latsLength = len(lats) #i know you no like this phillip im sorry
-  longsLength = len(longs)
-=======
-  latsLength = len(lats[:-1]) #i know you no like this phillip im sorry
-  longsLength = len(longs[:-1]) #doing this to see what happens
->>>>>>> 0a7491b420a38fed76340f20279a1f3dbc85add7
-  all_coords = np.zeros((latsLength,longsLength), dtype=tuple)
-  #print("Printing all_coords:\n", all_coords)
-  for i in range(latsLength):
-    for j in range(longsLength):
-      #print(j)
-      all_coords[i][j] = (lats[i], longs[j])
+def makeCoordsArray(latList, longList):
+  all_coords = np.zeros((len(latList),len(longList)), dtype=tuple)
+  for i in range(len(latList)):
+    for j in range(len(longList)):
+      all_coords[i][j] = (latList[i], longList[j])
   return all_coords
 
 
@@ -201,10 +192,12 @@ def getEmitterCoords(df):
 # This function gets the position of emitters within the grid
 def getEmitterPositions(emitter_coords, latList, longList, grid_corners):
   emitter_position = {}
+  latList = latList[:-1]
+  longList = longList[:-1]
   for i, j in emitter_coords.items():
     # calls getDeviceGridSpot to find where the emitter would be in the grid
     # ex: emitter at 22, 4.0 might be at (4, 16) (random spot not accurate)
-    loc = getDeviceGridSpot(j, latList[:-1], longList[:-1], grid_corners)
+    loc = getDeviceGridSpot(j, latList, longList, grid_corners)
     # if -1 is returned, then that sensor/x pair is not in the grid
     if loc == -1:
       emitter_position.update({i: -1})
@@ -220,13 +213,13 @@ def getEmitterPositions(emitter_coords, latList, longList, grid_corners):
 # It returns a tuple of 4 coords representing the 4 corners of the grid square
 # the device is in
 # If it is not in bounds, it returns -1
-def getDeviceGridSpot(device_loc, lats, longs, grid_corners):
+def getDeviceGridSpot(device_loc, latList, longList, grid_corners):
   lat_index = 0
-  lats = lats[:-1]
-  longs = longs[:-1]
-  if (max(lats) >= device_loc[0]) & (min(lats) <= device_loc[0]):
-    for i in range(len(lats)):
-      if (device_loc[0] > lats[i]):
+  latList = latList[:-1]
+  longList = longList[:-1]
+  if (max(latList) >= device_loc[0]) & (min(latList) <= device_loc[0]):
+    for i in range(len(latList)):
+      if (device_loc[0] > latList[i]):
         lat_index = i
   else:
     #print("Inputted coordinates are out of range of grid latitude")
@@ -234,19 +227,19 @@ def getDeviceGridSpot(device_loc, lats, longs, grid_corners):
     return -1
 
   long_index = 0
-  if (max(longs) >= device_loc[1]) & (min(longs) <= device_loc[1]):
-    for i in range(len(longs)):
-      if (device_loc[1] > longs[i]):
+  if (max(longList) >= device_loc[1]) & (min(longList) <= device_loc[1]):
+    for i in range(len(longList)):
+      if (device_loc[1] > longList[i]):
         long_index = i
   else:
     #print("Inputted coordinates are out of range of grid longitude")
     #print("Please set new coordinates")
     return -1
 
-  coord_1 = (lats[lat_index], longs[long_index])
-  coord_2 = (lats[lat_index], longs[long_index + 1])
-  coord_3 = (lats[lat_index + 1], longs[long_index])
-  coord_4 = (lats[lat_index + 1], longs[long_index + 1])
+  coord_1 = (latList[lat_index], longList[long_index])
+  coord_2 = (latList[lat_index], longList[long_index + 1])
+  coord_3 = (latList[lat_index + 1], longList[long_index])
+  coord_4 = (latList[lat_index + 1], longList[long_index + 1])
   device_coords = (coord_1, coord_2, coord_3, coord_4)
 
   # this checks if the device coords match with a grid spot
@@ -383,9 +376,6 @@ def sensorMaxCoords(sensorList, latList, longList):
   maxCoordsDict = {}
   sensorLocations = sensorLocationsDict(sensorList)
 
-  latList = latList[:-1]
-  longList = longList[:-1]
-
   for sensor, coords in sensorLocations.items():
     for i in range(len(latList)):
       if(latList[i] > coords[0]):
@@ -409,8 +399,6 @@ def containsSensor(tile, sensorList, latList, longList):
   the given tile Cell. Will return a dictionary with key as sensor and value
   as a boolean that indicates if the sensor is within the tiles border
   """
-  latList = latList[:-1]
-  longList = longList[:-1]
 
   tileDict = {}
   maxCoordsDict = sensorMaxCoords(sensorList, latList, longList)
