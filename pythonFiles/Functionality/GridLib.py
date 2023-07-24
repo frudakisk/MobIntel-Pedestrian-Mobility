@@ -58,6 +58,8 @@ def visualizeGrid(origin, lat_dist, long_dist, meridianDist, parallelDist):
   Returns: a folium map onject
   """
   latList, longList = createGrid(origin, lat_dist, long_dist, meridianDist, parallelDist)
+  latList = latList[:-1]
+  longList = longList[:-1]
   m = folium.Map(location=origin, width=2000, height=900, zoom_start=19, max_zoom=21)
   parimeter = [origin,
                (origin[0], longList[-1]),
@@ -197,7 +199,7 @@ def getEmitterPositions(emitter_coords, latList, longList, grid_corners):
   for i, j in emitter_coords.items():
     # calls getDeviceGridSpot to find where the emitter would be in the grid
     # ex: emitter at 22, 4.0 might be at (4, 16) (random spot not accurate)
-    loc = getDeviceGridSpot(j, latList, longList, grid_corners)
+    loc = getDeviceGridSpot(j, latList[:-1], longList[:-1], grid_corners)
     # if -1 is returned, then that sensor/x pair is not in the grid
     if loc == -1:
       emitter_position.update({i: -1})
@@ -215,6 +217,8 @@ def getEmitterPositions(emitter_coords, latList, longList, grid_corners):
 # If it is not in bounds, it returns -1
 def getDeviceGridSpot(device_loc, lats, longs, grid_corners):
   lat_index = 0
+  lats = lats[:-1]
+  longs = longs[:-1]
   if (max(lats) >= device_loc[0]) & (min(lats) <= device_loc[0]):
     for i in range(len(lats)):
       if (device_loc[0] > lats[i]):
@@ -257,6 +261,8 @@ def makeGrid(grid_corners, latList, longList, emitter_locs, df):
   """
   RSSI_sensor_list = ('57', '20', '05', '34', '22', '06', '31', '36', '35') #no RSSI values, excluded 04, 54, 40, 42, 33 from original list
   ref_sensor_list = ('57', '20', '54', '40', '34', '22', '42', '31', '33', '36', '35') #missing ref sensors
+  latList = latList[:-1]
+  longList = longList[:-1]
 
   grid = np.zeros(grid_corners.shape, dtype=GridSquare)
   print("What is the shape of the grid\n", grid_corners.shape) #6,26 when it should be 5,25
@@ -371,6 +377,10 @@ def sensorMaxCoords(sensorList, latList, longList):
   within our grid."""
   maxCoordsDict = {}
   sensorLocations = sensorLocationsDict(sensorList)
+
+  latList = latList[:-1]
+  longList = longList[:-1]
+
   for sensor, coords in sensorLocations.items():
     for i in range(len(latList)):
       if(latList[i] > coords[0]):
@@ -394,6 +404,9 @@ def containsSensor(tile, sensorList, latList, longList):
   the given tile Cell. Will return a dictionary with key as sensor and value
   as a boolean that indicates if the sensor is within the tiles border
   """
+  latList = latList[:-1]
+  longList = longList[:-1]
+
   tileDict = {}
   maxCoordsDict = sensorMaxCoords(sensorList, latList, longList)
   for sensor, coord in maxCoordsDict.items():
