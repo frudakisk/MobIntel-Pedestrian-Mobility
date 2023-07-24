@@ -138,13 +138,13 @@ def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adju
 
 # This function makes a 2D array of all possible lat/long combinations
 def makeCoordsArray(lats, longs):
-  latsLength = len(lats[:-1]) #i know you no like this phillip im sorry
-  longsLength = len(longs[:-1])
+  latsLength = len(lats) #i know you no like this phillip im sorry
+  longsLength = len(longs)
   all_coords = np.zeros((latsLength,longsLength), dtype=tuple)
-  print("Printing all_coords:\n", all_coords)
+  #print("Printing all_coords:\n", all_coords)
   for i in range(latsLength):
     for j in range(longsLength):
-      print(j)
+      #print(j)
       all_coords[i][j] = (lats[i], longs[j])
   return all_coords
 
@@ -162,31 +162,17 @@ def getGridCorners(coord_array):
     # Following code saves coords of the 4 corners of each grid position
     # The corners are always saved in the same order
     # That is, bottom left, bottom right, top left, top right
-
-    # This statement deals with the very last grid spot i.e. (19, 169)
-    if (itr.multi_index[0] == grid_array.shape[0] - 1) & (itr.multi_index[1] == grid_array.shape[1] - 1):
-      grid_array[itr.multi_index] = (coord_array[itr.multi_index[0] - 1, itr.multi_index[1] - 1],
-                            coord_array[itr.multi_index[0] - 1, itr.multi_index[1]],
-                            coord_array[itr.multi_index[0], itr.multi_index[1] - 1],
-                            coord_array[itr.multi_index[0], itr.multi_index[1]])
-    # This statement deals with the last grid row
-    elif itr.multi_index[0] == grid_array.shape[0] - 1:
+    # ignores the cells in top row and last column
+    if (itr.multi_index[0] != grid_array.shape[0] - 1) & (itr.multi_index[1] != grid_array.shape[1] - 1):
       grid_array[itr.multi_index] = (coord_array[itr.multi_index],
-                                coord_array[itr.multi_index[0], itr.multi_index[1] + 1],
-                                coord_array[itr.multi_index[0] - 1, itr.multi_index[1]],
-                                coord_array[itr.multi_index[0] - 1, itr.multi_index[1] + 1])
-    # This statement deals with the last grid column
-    elif itr.multi_index[1] == grid_array.shape[1] - 1:
-      grid_array[itr.multi_index] = (coord_array[itr.multi_index[0], itr.multi_index[1] - 1],
-                            coord_array[itr.multi_index[0], itr.multi_index[1]],
-                            coord_array[itr.multi_index[0] + 1, itr.multi_index[1] - 1],
-                            coord_array[itr.multi_index[0] + 1, itr.multi_index[1]])
-    # This statement deals with the rest
-    else:
-      grid_array[itr.multi_index] = (coord_array[itr.multi_index],
-                                    coord_array[itr.multi_index[0], itr.multi_index[1] + 1],
-                                    coord_array[itr.multi_index[0] + 1, itr.multi_index[1]],
-                                    coord_array[itr.multi_index[0] + 1, itr.multi_index[1] + 1])
+                                  coord_array[itr.multi_index[0], itr.multi_index[1] + 1],
+                                  coord_array[itr.multi_index[0] + 1, itr.multi_index[1]],
+                                  coord_array[itr.multi_index[0] + 1, itr.multi_index[1] + 1])
+      
+  # deletes the top row and last column
+  # just needed them to get the corners for the edge cells
+  grid_array = np.delete(grid_array, grid_array.shape[0] - 1, 0)
+  grid_array = np.delete(grid_array, grid_array.shape[1] - 1, 1)
 
   return grid_array
 
