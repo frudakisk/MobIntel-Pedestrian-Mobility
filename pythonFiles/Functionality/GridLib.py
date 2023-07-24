@@ -413,8 +413,8 @@ def containsSensor(tile, sensorList, latList, longList):
 def averageActualRSSI(emitter_locs, df, ref_sensor_list):
   RSSI = {}
   for i in ref_sensor_list:
-    x = 0.0
-    while x <= 16.0:
+    x = 0 #Kyle: turned this to int instead of float bc was getting keyError
+    while x <= 16:
       mean = df.loc[(df['x'] == x) & (df['ref_sensor'] == int(i))].mean()
       mean = mean.iloc[2:]
       if emitter_locs[f"{i}, {x}"] != -1:

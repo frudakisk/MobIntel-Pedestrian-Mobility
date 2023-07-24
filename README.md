@@ -1,25 +1,17 @@
 # MobIntel-Project
 
 ## Project Description
-This is where we will compile all out code that went towards this project. This project was working towards determining the trajectory of people along a street to help cities better plan for pandemics. With this kind of information, city planners could understand how people are moving and make precautions based on this information
+This is where we will compile all out code that went towards this project. This project was working towards determining the trajectory of people along a street to help cities better plan for pandemics. With this kind of information, city planners could understand how people are moving and make precautions based on this information. As an overview, In our research, we encountered valuable insights regarding trilateration of RSSI values as a method for determining device positions. Recognizing its limitations, we boldly shifted our focus to exploring a promising new avenue—the grid system. While still in its developmental phase, the grid approach holds immense potential for revolutionizing our understanding of device positioning.​
+
 
 ## Table of Contents
-- How to Find Stuff
+1. How to Find Stuff
+2. Libraries
+3. Drivers
+4. How to Use Libraries
+5. other stuff
 
-- Libraries
-
-- Drivers
-
-This section has all the drivers fo each of the libraries. Here, we will explain the intentions of some functions.
-
-- How to Use Libraries
-
-This section will explain how we import our libraries
-
-- other stuff
-
-This section includes misc. stuff 
-
+---
 
 ### How to Find Stuff
 
@@ -32,6 +24,8 @@ generated via out trilateration algorithms, or our grid visualization efforts. T
 subfolders; developmentFolder, Drivers, and Functionality. The developmentFolder is a sort of playground where each of the developers can play with some of the
 code for development purposes. The Drivers folder contains python files that utilize the libraries developed throughout this process. It tests and makes sure that
 any updates given to any functionality still provide outputs that result in 0 errors. The Functionality folder holds all the libraries used in this project. For more detailed descriptions of the libraries, see the Libraries section of this readme file. Finally, the webDevelopmentFiles is the last parent folder. In this folder, we contain files that work with web development. Currently, there are two sub folders. Of the two, interactiveGrid is of larger importance. In this subfolder, we have the code for our interactive grid visualization. In the other subfolder, we have code written in php that revolved around various aspects of the project including trilateration, random waypointing, and other topics. 
+
+---
 
 ### Libraries
 
@@ -139,35 +133,31 @@ sensors as well as separates the data into seprate categorize.
 * plotInDepthWeek(dateAgg, hourAgg)
 * plotDays(dateAgg, hourAgg)
 
+---
 
 ### Drivers
 The purpose of the drivers is to showcase the functions within the library working
 the way we expect them to. Some drivers are shorter than others and do not show each
 function working separetly. This is because some drivers have functions that utilize the specific
 usecase of other functions within it. If the parent function works as expected, we can assume the child
-functions to be in working order.
+functions to be in working order. A list of the drivers will be presented here. The names of each driver correspond to which library it uses.
 
-#### RSSITODistanceLibDriver
+* RSSITOoDistanceLibDriver
+* PathLossLibDriver
+* GridLibDriver
+* TrilaterationLibDriver
+* mLLibDriver
+* DataFiltrationLibDriver
+* ExploritoryAnalysisLibDriver
 
-#### PathLossLibDriver
-
-#### GridLibDriver
-
-#### TrilaterationLibDriver
-
-#### mLLibDriver
-
-#### DataFiltrationLibDriver
-
-#### ExploritoryAnalysisLibDriver
-
+---
 
 ### How to Use Libraries
 
-To use a library in the pythonFiles folder, we must first import the sys module, which is standard
+To use a library in the pythonFiles folder, we must first import the sys module, which is in standard
 library in python. Then, we must use the path.append method to add in an extra path for our 
-system to search through when we are looking for libraries to use. Finally, we must call the library.
-The way that I do this is by first import from Functionality and the call the specific library I want.
+system to search through when we are looking for libraries to use. Typically, this path will be 'pythonFiles', since it is native to thie repository, and not the local device. Finally, we must call the library.
+The way that we do this is by first importing from Functionality and then call the specific library I want.
 I usually give it an alias as well. Below is an example code block of what this would look like:
 
 ```
@@ -175,4 +165,12 @@ import sys
 sys.path.append("pythonFiles")
 
 from Functionality import GridLib as gl
+```
+
+One could also use dot notation to grab the same library:
+```
+import sys
+sys.path.append("pythonFiles")
+
+import Functionality.GridLib as gl
 ```
