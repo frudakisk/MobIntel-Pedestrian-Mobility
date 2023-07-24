@@ -139,7 +139,7 @@ def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adju
 # This function makes a 2D array of all possible lat/long combinations
 def makeCoordsArray(lats, longs):
   latsLength = len(lats[:-1]) #i know you no like this phillip im sorry
-  longsLength = len(longs[:-1])
+  longsLength = len(longs[:-1]) #doing this to see what happens
   all_coords = np.zeros((latsLength,longsLength), dtype=tuple)
   print("Printing all_coords:\n", all_coords)
   for i in range(latsLength):
