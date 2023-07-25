@@ -37,6 +37,7 @@ class Cell{
 
 // Grid creation
 const grid = document.getElementById('grid');
+var r = document.querySelector(':root'); //access to css variables
 
 
 function fetchData() {
@@ -53,8 +54,7 @@ function fetchData() {
   .then(jsonData => {
     // Process the JSON data
     //Will have to MANUALLY change columns and rows templates to whatever dimensions we decide for the grid
-    let gridLength = 25;
-    let gridWidth = 5;
+    captureDimensions(jsonData);
     processData(jsonData);
     resetCells();
   })
@@ -84,6 +84,27 @@ function processData(data){
   }
 }
 
+function captureDimensions(jsonData){
+  /*
+  jsonData: the json file in question
+  This function captures the correct number of rows and columns
+  that the data needs to be represented in. This is done by looking at
+  the last entry of the json file and utilizing that location value.
+  The location value is split into row value and column value. Each
+  is incremented by one and then transfered over to the css file
+  to tell us how many rows and columns we need to present
+  */
+  var jsonLastIndex = jsonData.length - 1;
+  var lastEntry = jsonData[jsonLastIndex];
+  var lastLocation = lastEntry['location']
+  let infoLocation = lastLocation.slice(1,-1); //get rid of ()
+  infoLocation = infoLocation.split(","); //turn to array [row,col]
+  var rowNum = Number(infoLocation[0]) + 1;
+  var colNum = Number(infoLocation[1]) + 1;
+  r.style.setProperty('--rows', rowNum);
+  r.style.setProperty('--columns', colNum);
+}
+
 
 function createGridCell(row, column, location, corners, center, sensor_distances, calculated_RSSI, avg_RSSI, score, hasSensor){
   /*Creates an instance of Cell class and also
@@ -92,6 +113,10 @@ function createGridCell(row, column, location, corners, center, sensor_distances
   const cellElement = document.createElement('div');
   cellElement.className = 'cell';
   cellElement.textContent = 'Cell';
+  if (cell.hasSensor != "[]") {
+    //Give cells that have a sensor in it a thin black border
+    cellElement.style.border = "thin solid #000000";
+  }
   cellElement.addEventListener('click', () => showPopup(cell, cellElement));
   cellElement.cellinfo = cell;
   grid.appendChild(cellElement);

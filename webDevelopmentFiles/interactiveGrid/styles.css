@@ -1,9 +1,15 @@
+:root {
+  --rows: 0;
+  --columns: 0;
+}
+
+
 /*Will have to MANUALLY change columns and rows templates to whatever 
 dimensions we decide for the grid*/
 .grid {
   display: grid;
-  grid-template-columns: repeat(25, 1fr);
-  grid-template-rows: repeat(5, 1fr);
+  grid-template-columns: repeat(var(--columns), 1fr);
+  grid-template-rows: repeat(var(--rows), 1fr);
   direction: rtl;
   gap: 1px;
 }
