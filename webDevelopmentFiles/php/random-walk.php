@@ -1,4 +1,10 @@
 <?php
+/**
+ * This file is a random walk model simulation, the first experiment in generating mobility traces,
+ * it calculates a new direction and moves the specified distance in that direction, it runs by the specified time.
+ * It's all displayed in a map for easy visualization.
+ * It takes speed and simulation time as parameters.
+ */
 
 class Entity
 {

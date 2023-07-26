@@ -1,4 +1,8 @@
 <?php
+/**
+ * This file trilaterates device locations based on rssi captured by three sensors at a time and displays them on a map
+ * as a spatiotemporal animation.
+ */
 require 'vendor/autoload.php';
 
 use Tuupola\Trilateration\Intersection;

@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file was an attempt at multilateraion but the results were way worse than trilateration, i couldnt get this script to work properly.
+ */
+
+
 function distanceBetweenCoordinates($lat1, $lon1, $lat2, $lon2) {
     $earthRadius = 6371; // Earth's radius in kilometers
 

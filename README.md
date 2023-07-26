@@ -156,7 +156,7 @@ functions to be in working order. A list of the drivers will be presented here. 
 
 To use a library in the pythonFiles folder, we must first import the sys module, which is in standard
 library in python. Then, we must use the path.append method to add in an extra path for our 
-system to search through when we are looking for libraries to use. Typically, this path will be 'pythonFiles', since it is native to thie repository, and not the local device. Finally, we must call the library.
+system to search through when we are looking for libraries to use. Typically, this path will be 'pythonFiles', since it is native to the repository, and not the local device. Finally, we must call the library.
 The way that we do this is by first importing from Functionality and then call the specific library I want.
 I usually give it an alias as well. Below is an example code block of what this would look like:
 

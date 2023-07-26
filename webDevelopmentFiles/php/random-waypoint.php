@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file is a random waypoint model simulation, it creates a trajectory between two coordinates by selecting
+ * sensor coordinates as waypoints. The selection of waypoints is based on the density of detected probes at the selected time.
+ * It takes as parameters a starting coordinate, and ending coordinate and the speed as meters per move and two date times.
+ */
 
 /**
  * this is just for backwards compatibility with old php versions.
@@ -722,10 +727,13 @@ class Node
      */
     public function sortWaypoints() {
         usort($this->waypoints, function($a, $b) {
-            return ($a['density'] < $b['density']) ? -1 : 1;
+            return ($a['distance'] < $b['distance']) ? -1 : 1;
         });
 
-        // var_dump($this->waypoints);
+        usort($this->waypoints, function($a, $b) {
+            return ($a['distance'] < $b['distance']) ? -1 : 1;
+        });
+        var_dump($this->waypoints);
     }
 }
 
