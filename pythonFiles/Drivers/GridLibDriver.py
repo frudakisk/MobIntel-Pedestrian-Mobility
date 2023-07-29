@@ -7,6 +7,7 @@ sys.path.append("pythonFiles")
 from Functionality import GridLib as gl
 
 df500 = pd.read_csv("datasets/block_500_only.csv", engine='python')
+df500 = df500.drop(columns=("Unnamed: 0"))
 origin = (26.713378, -80.05693981171936)
 
 #adjusted latitude
@@ -40,6 +41,8 @@ grid_corners = gl.getGridCorners(coords_array) # stores the corner coordinates o
 emitter_coords = gl.getEmitterCoords(df500) # finds the coordinates of the all emitters
 emitter_locs = gl.getEmitterPositions(emitter_coords, latList, longList, grid_corners) # gets the location of emitters with in the grid
 grid = gl.makeGrid(grid_corners, latList, longList, emitter_locs, df500) # creates grid composed of GridSquare objects
+print(emitter_locs)
+distance_error_array = gl.localizationTest(grid, df500, emitter_locs)
 
 print("Showing all locations that have a sensor in it")
 for i in range(len(grid)):
