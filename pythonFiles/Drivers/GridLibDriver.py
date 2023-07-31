@@ -1,6 +1,7 @@
 import sys
 import pandas as pd
 from geopy import distance
+import random
 
 sys.path.append("pythonFiles")
 
@@ -41,8 +42,16 @@ grid_corners = gl.getGridCorners(coords_array) # stores the corner coordinates o
 emitter_coords = gl.getEmitterCoords(df500) # finds the coordinates of the all emitters
 emitter_locs = gl.getEmitterPositions(emitter_coords, latList, longList, grid_corners) # gets the location of emitters with in the grid
 grid = gl.makeGrid(grid_corners, latList, longList, emitter_locs, df500) # creates grid composed of GridSquare objects
-print(emitter_locs)
 distance_error_array = gl.localizationTest(grid, df500, emitter_locs)
+
+while True:
+  rand_row = random.randint(0,df500.shape[0] - 1) # picks number from 0 to size of dataframe - 1
+  device_row = df500.iloc[rand_row] # gets random row
+  position = device_row[0:2] # stores ref_sensor and x
+  if emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'] != -1:
+    best_localization_guess = gl.gridLocalization(grid, df500, emitter_locs, rand_row)
+    print(best_localization_guess)
+    break
 
 print("Showing all locations that have a sensor in it")
 for i in range(len(grid)):
@@ -50,18 +59,6 @@ for i in range(len(grid)):
         tile = grid[i][j]
         if tile.hasSensor:
             print(tile.location)
-
-print(grid[2][0].hasSensor)
-print(grid[4][0].hasSensor)
-
-#Give me the corner values of cells [2][0] and [4][0]
-#x3 & x4 share latitiude, x2 a& x4 share longitudes
-print("cell (2,0) corners\n", grid[2][0].corners)
-print("cell (4,0) corners\n", grid[4][0].corners)
-#print("cell (3,0) conrners\n", grid[3][0].corners)
-print("Showing all lines of latitude (parallels) should be 6\n", latList)
-
-
 
 # The following block demonstrates the gridLocalization function
 # For now, it outputs a single tuple representing a cell of the grid
