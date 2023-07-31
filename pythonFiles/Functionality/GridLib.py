@@ -11,7 +11,7 @@ from Functionality import PathLossLib as pl
 # This is the class for a grid square
 class GridSquare:
   def __init__(self, location, corners, center, sensor_distances, calculated_RSSI, avg_RSSI,
-               mode_RSSI, best_RSSI, is_emitter, score, hasSensor): #changed actual_RSSI to avg_RSSI
+               mode_RSSI, best_RSSI, is_emitter, score, hasSensor, localizationGuesses): #changed actual_RSSI to avg_RSSI
     # contains all necessary variables for a grid square
     self.location = location
     self.corners = corners
@@ -24,6 +24,7 @@ class GridSquare:
     self.is_emitter = is_emitter
     self.score = score
     self.hasSensor = hasSensor #KYLE ADDED THIS ATTRIBUTE ON 7/11/23
+    self.localizationGuesses = localizationGuesses #Kyle added this attribute on 7/31/23
 
 
 def adjustedLongitude(t, x):
@@ -325,7 +326,7 @@ def makeGrid(grid_corners, latList, longList, emitter_locs, df):
     # creates the grid square object
     grid_square = GridSquare(location, grid_corners[itr.multi_index],
                             (center_lat, center_long), sensor_distances,
-                            calculated_RSSI, avg_RSSI, -99, -99, is_emitter, scores , [])
+                            calculated_RSSI, avg_RSSI, -99, -99, is_emitter, scores , [], {})
 
     #FOLLOWING BLOCK IS FROM KYLE FOR HASSENSOR ------------------------------------
     #get list of sensors that have true as value
@@ -531,7 +532,7 @@ def gridLocalization(grid, df, emitter_locs, rand_row):
 
   RSSI = device_row[2:].to_dict() # stores RSSIs from row into dict
   emitter_grid_loc = emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}']
-  print("Actual RSSIs:",RSSI)
+  print("AAAAAAAAHHHHHHHHH Actual RSSIs:",RSSI)
   print(f'Emitter at: sensor = {int(position.iloc[1])}, x = {position.iloc[0]}')
   print("Actual grid loc:",emitter_grid_loc)
 
@@ -575,7 +576,11 @@ def gridLocalization(grid, df, emitter_locs, rand_row):
   print('Estimation error from taking average:', avg_method_error, 'meters') # Pythagorean Theorem to calc distance
   print()
 
-  return score_mean[:10]
+  #converting to dict bc this is the standard for this file type
+  score_mean = score_mean[:5]
+  score_dict = score_mean.to_dict()
+
+  return emitter_grid_loc, score_dict #Changed to top 5 instead of top 10 for smaller grid
 
 def csvTojson(csvFilePath, jsonPath):
   """
@@ -603,3 +608,34 @@ def csvTojson(csvFilePath, jsonPath):
 
   with open(jsonPath, 'w', encoding='utf-8') as jsonf:
     jsonf.write(json.dumps(data, indent=4))
+
+
+def localizecsv(csvFilePath, csvOutputFilePath, position, data):
+  """
+  csvFilePath: original csv file we plan to manipulate. Should be the csv file
+  for the grid
+  csvOutputFilePath: name of new version of csvFilePath
+  newColumnName: name of new column to be added at the end of the rows
+  position: The location we want to put the data into
+  data: a dictionary of localization guesses
+
+  This function will add in data to the localizationGuesses column of each row.
+  We read through the csv file, find the row with the same position as the
+  parameter, and then input the data to the localizationGuesses column of that row
+  """
+  with open(csvFilePath, 'r') as csvInput:
+    with open(csvOutputFilePath, 'w') as csvoutput:
+      writer = csv.writer(csvoutput)
+      reader = csv.reader(csvInput)
+
+      all = []
+      row = next(reader)
+      all.append(row)
+
+      for row in reader:
+        if str(row[1]) == str(position):
+          print("found a match!")
+          row[12] = data
+        all.append(row)
+
+      writer.writerows(all)

@@ -49,8 +49,10 @@ while True:
   device_row = df500.iloc[rand_row] # gets random row
   position = device_row[0:2] # stores ref_sensor and x
   if emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'] != -1:
-    best_localization_guess = gl.gridLocalization(grid, df500, emitter_locs, rand_row)
-    print(best_localization_guess)
+    emitter_grid_loc, best_localization_guess = gl.gridLocalization(grid, df500, emitter_locs, rand_row)
+    print("Positions in question:\n", position)
+    print("location of the position in question:\n", emitter_grid_loc)
+    print("Showing best localization guesses\n", best_localization_guess)
     break
 
 print("Showing all locations that have a sensor in it")
@@ -68,8 +70,18 @@ for i in range(len(grid)):
 #export grid as csv
 gl.exportGridAsCsv(grid=grid, pathName="datasets/GridLibDriverGrid.csv")
 
-#converting csv file to json file
+# #localizing csv file
 csvFile = "datasets/GridLibDriverGrid.csv"
+testOutput = "datasets/GridLibDriverGridWithLocalization.csv"
+gl.localizecsv(csvFilePath=csvFile, 
+               csvOutputFilePath=testOutput,
+               position = emitter_grid_loc,
+               data = best_localization_guess)
+
+
+
+#converting csv file to json file
+csvFile = "datasets/GridLibDriverGridWithLocalization.csv"
 jsonPath = "webDevelopmentFiles/interactiveGrid/grid_json.json"
 gl.csvTojson(csvFile, jsonPath)
 
