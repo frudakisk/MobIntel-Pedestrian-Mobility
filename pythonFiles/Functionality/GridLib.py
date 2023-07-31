@@ -1,13 +1,12 @@
-from math import pi, cos
 from geopy import distance
-import folium, numpy as np, sys, pandas as pd, webbrowser, random, csv, json
+from math import pi, cos
+import folium, numpy as np, matplotlib.pyplot as plt, sys, pandas as pd
+import webbrowser, random, csv, json, math, random
 
 sys.path.append("pythonFiles")
 
 from Functionality import TrilaterationLib as tl
 from Functionality import PathLossLib as pl
-
-
 
 # This is the class for a grid square
 class GridSquare:
@@ -183,7 +182,7 @@ def getEmitterCoords(df):
   emitter_coords = {}
   for i in ref:
     for j in x:
-      emitter_coords.update({f"{i}, {j}": (adjustedLongitude(tl.getCoordinates(str(i)), j))})
+      emitter_coords.update({f"{i}, {float(j)}": (adjustedLongitude(tl.getCoordinates(str(i)), j))})
       # makes a dict with ref_sensor and x as key, and coordinates of emitter as value
       # ex: {'22, 0.0': (26.713399, -80.056938), '22, 4.0': (26.713399, -80.056897728846), etc}
   return emitter_coords
@@ -413,13 +412,14 @@ def containsSensor(tile, sensorList, latList, longList):
 def averageActualRSSI(emitter_locs, df, ref_sensor_list):
   RSSI = {}
   for i in ref_sensor_list:
-    x = 0 #Kyle: turned this to int instead of float bc was getting keyError
-    while x <= 16:
+    x = 0.0 #Kyle: turned this to int instead of float bc was getting keyError
+    # Phillip changed it back because was getting keyError 
+    while x <= 16.0:
       mean = df.loc[(df['x'] == x) & (df['ref_sensor'] == int(i))].mean()
       mean = mean.iloc[2:]
       if emitter_locs[f"{i}, {x}"] != -1:
         RSSI.update({emitter_locs[f"{i}, {x}"]: mean})
-      x += 4
+      x += 4.0
   return RSSI
 
 
@@ -442,105 +442,140 @@ def completeGrid(origin, latDistance, longDistance, adjustedMeridianDistance, ad
   grid = makeGrid(grid_corners, latList, longList, emitter_locs, df500) # creates grid composed of GridSquare objects
   return grid
 
-# This block of code deals with guessing a device's location in the grid
+def localizationTest(grid, df, emitter_locs):
 
-
-def gridLocalization(grid, df500, emitter_locs):
-  """
-  grid:
-  df500:
-  emitter_locs:
-  Returns: 
-  This block of code deals with guess a device's location in the grid
-  """
-  RSSI_sensor_list = ('57', '20', '05', '34', '22', '06', '31', '36', '35') #no RSSI values, excluded 04, 54, 40, 42, 33 from original list
-
-  # AVG BEGIN ----------------------------------------------------------------------------------
-  # This section deals with localization via averaging scores
-
-  df = df500.dropna() # for now I drop all rows that have empty cells
-  if grid.shape[0] == 5: # this is a check for if sample grid is being used
-    df = df.loc[df['ref_sensor'] == 22]
-
-  # This loop picks random numbers until it one that doesnt return -1
-  # not sure why some emitter_locs return -1, have to look into it
-  rand_row = 0
-  while True:
-    rand_row = random.randint(0,df.shape[0])
-    device_row = df.iloc[rand_row] # gets random row
+  random.seed(0) # ensures same numbers are chosen
+  count = 0
+  results = np.zeros(100) # creates empty numpy array to hold results
+  device_row = df.iloc[2] # gets random row
+  # runs localization however many times
+  
+  while count < 100:
+    rand_row = random.randint(0,df.shape[0] - 1) # picks number from 0 to size of dataframe - 1
+    device_row = df.iloc[rand_row] # gets random row 
     position = device_row[0:2] # stores ref_sensor and x
+    
     if emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'] != -1:
-      break
-  print(rand_row)
+      distance_error = gridLocalizationTest(grid, df, emitter_locs, rand_row) # calls localization function
+      results[count] = distance_error # stores distance error results
+      count += 1
+
+  print("Mean: ", results.mean())
+  print("Median: ", np.median(results))
+  fig, ax = plt.subplots(figsize=(15,5))
+  plt.hist(results, bins=20, linewidth=0.5, edgecolor="white")
+  ax.set_xlabel('distance error')
+  ax.set_ylabel('count')
+  ax.set_title(f'log with distance > 10, Grid shape: {grid.shape}, Mean: {round(results.mean(), 2)}, Median: {np.median(results)}')
+  plt.show()
+  
+  return results
+
+def gridLocalizationTest(grid, df, emitter_locs, rand_row):
+
+  device_row = df.iloc[rand_row] # gets random row
+  position = device_row[0:2] # stores ref_sensor and x
 
   RSSI = device_row[2:].to_dict() # stores RSSIs from row into dict
+  emitter_grid_loc = emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}']
   print("Actual RSSIs:",RSSI)
   print(f'Emitter at: sensor = {int(position.iloc[1])}, x = {position.iloc[0]}')
-  emitter_grid_loc = emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}']
   print("Actual grid loc:",emitter_grid_loc)
 
-
-  score_df = pd.DataFrame(columns=['Location','57','20','05','34','22','06','31','36','35'])
-
   # iterates through grid
+  score_list = [] # list to store score dicts
   itr = np.nditer(grid, flags=['multi_index', 'refs_ok'])
   for x in itr:
-    scores = {'Location':itr.multi_index} # stores grid location 
+    scores = {'Location':itr.multi_index} # stores grid location
 
     # calculates scores for entire grid
     for i, j in grid[itr.multi_index].calculated_RSSI.items():
-        scores.update({i: abs(j - RSSI['s'+i])})
-    # stores as dataframe
-    score_df = pd.concat([score_df, (pd.DataFrame.from_dict([scores]))])
+      
+      # subtract calculated RSSI from device RSSI and multiply by log base 10 of sensor distance
+      # no absolute values
+      score = (RSSI['s'+i] - j) * math.log(grid[itr.multi_index].sensor_distances[i], 10)
 
+      # if sensor is less than 10 m away from cell, ignore it 
+      if grid[itr.multi_index].sensor_distances[i] > 10:
+        scores.update({i: score})
+      
+    # add scores for cell into list 
+    score_list.append(scores)
+
+  # create dataframe from list of score dicts
+  score_df = pd.DataFrame(score_list, columns=['Location','57','20','05','34','22','06','31','36','35'])
   score_df = score_df.set_index('Location')
+
   # take average of every row and sort in ascending order
   score_mean = score_df.mean(axis=1).sort_values(ascending=True)
+  #display(score_mean)
 
-  # this is just for distance calc
+  # gets latitude and longitude distance from actual location
   lat_dist_avg = abs(score_mean.index[0][0] - emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'][0])
   long_dist_avg = abs(score_mean.index[0][1] - emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'][1])
-  # AVG END ----------------------------------------------------------------------------------
 
-  # COMPARISON BEGIN----------------------------------------------------------------------------------
-  # This section deals with localization via comparing scores
-
-  # row at 0 used as baseline 
-  best_score = score_df.iloc[0] 
-  best_score_index = score_df.index[0]
-
-  # iterate through whole score dataframe 
-  for index, row in score_df.iterrows():
-    count = 0
-    for sensor in score_df.columns:
-      if row[sensor] < best_score[sensor]:
-        # if sensor on current row has a lower score than the sensor in best_score row
-        # +1 to count
-        count += 1
-
-      # since you aren't going to get a row with all values lower, arbitrarily
-      # pick 5 lower values as goal
-      # if count gets to 5, then make current row the new best
-      if count >= 5:
-        best_score = row
-        best_score_index = index
-        break
-
-  # used for distance calc
-  lat_dist = abs(best_score_index[0] - emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'][0])
-  long_dist = abs(best_score_index[1] - emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'][1])
-  # COMPARISON END ----------------------------------------------------------------------------------
+  # takes latitude and longitude distance and uses pythagorean theorem to calculate distance error
+  avg_method_error = round(np.sqrt(lat_dist_avg**2 + long_dist_avg**2), 2)
 
   print("Guessed loc from average:", score_mean.index[0])
   print("Estimated RSSI for this loc:", grid[score_mean.index[0]].calculated_RSSI)
-  print('Estimation error from taking average:', round(np.sqrt(lat_dist_avg**2 + long_dist_avg**2), 2), 'meters') # Pythagorean Theorem to calc distance
+  print('Estimation error from taking average:', avg_method_error, 'meters') # Pythagorean Theorem to calc distance
   print()
-  print("Guessed loc from comparing:", best_score_index)
-  print("Estimated RSSI for this loc:", grid[best_score_index].calculated_RSSI)
-  print('Estimation error from comparing:', round(np.sqrt(lat_dist**2 + long_dist**2), 2), 'meters')
 
-  return score_mean.index[0]
+  return avg_method_error
 
+def gridLocalization(grid, df, emitter_locs, rand_row):
+
+  device_row = df.iloc[rand_row] # gets random row
+  position = device_row[0:2] # stores ref_sensor and x
+
+  RSSI = device_row[2:].to_dict() # stores RSSIs from row into dict
+  emitter_grid_loc = emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}']
+  print("Actual RSSIs:",RSSI)
+  print(f'Emitter at: sensor = {int(position.iloc[1])}, x = {position.iloc[0]}')
+  print("Actual grid loc:",emitter_grid_loc)
+
+  # iterates through grid
+  score_list = [] # list to store score dicts
+  itr = np.nditer(grid, flags=['multi_index', 'refs_ok'])
+  for x in itr:
+    scores = {'Location':itr.multi_index} # stores grid location
+
+    # calculates scores for entire grid
+    for i, j in grid[itr.multi_index].calculated_RSSI.items():
+      
+      # subtract calculated RSSI from device RSSI and multiply by log base 10 of sensor distance
+      # no absolute values
+      score = (RSSI['s'+i] - j) * math.log(grid[itr.multi_index].sensor_distances[i], 10)
+
+      # if sensor is less than 10 m away from cell, ignore it 
+      if grid[itr.multi_index].sensor_distances[i] > 10:
+        scores.update({i: score})
+      
+    # add scores for cell into list 
+    score_list.append(scores)
+
+  # create dataframe from list of score dicts
+  score_df = pd.DataFrame(score_list, columns=['Location','57','20','05','34','22','06','31','36','35'])
+  score_df = score_df.set_index('Location')
+
+  # take average of every row and sort in ascending order
+  score_mean = score_df.mean(axis=1).sort_values(ascending=True)
+  #display(score_mean)
+
+  # gets latitude and longitude distance from actual location
+  lat_dist_avg = abs(score_mean.index[0][0] - emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'][0])
+  long_dist_avg = abs(score_mean.index[0][1] - emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'][1])
+
+  # takes latitude and longitude distance and uses pythagorean theorem to calculate distance error
+  avg_method_error = round(np.sqrt(lat_dist_avg**2 + long_dist_avg**2), 2)
+
+  print("Guessed loc from average:", score_mean.index[0])
+  print("Estimated RSSI for this loc:", grid[score_mean.index[0]].calculated_RSSI)
+  print('Estimation error from taking average:', avg_method_error, 'meters') # Pythagorean Theorem to calc distance
+  print()
+
+  return score_mean[:10]
 
 def csvTojson(csvFilePath, jsonPath):
   """
