@@ -1,6 +1,8 @@
 import pandas as pd
 from datetime import datetime, date, timedelta
 
+df500 = "datasets/block_500_only.csv"
+
 def read_file(filepath):
     """
     filepath: a parquet file that is of the form of a MobIntel sensor file
@@ -155,3 +157,16 @@ def determineMacHashDuration(filename):
     df = groupByMacHash(df)
     df["Duration"] = df.apply(lambda row : newDetermineDuration(row, 7), axis=1)
     return df
+
+def getSubsetByRefSensorAndX(refSensor, x):
+    """
+    refSensor: an integer that repesents a reference sensor in the 
+    block_500_only.csv
+    x: an integer that represents the distance the emitter is from the refSensor,
+    but is also a column in the block_500_only.csv
+    This function returns a data frame that is a subset of the same ref sensor
+    column and x column
+    """
+    df = pd.read_csv(df500)
+    newDf = df.query("ref_sensor == @refSensor & x == @x").copy()
+    return newDf

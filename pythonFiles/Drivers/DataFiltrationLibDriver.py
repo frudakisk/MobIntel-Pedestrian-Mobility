@@ -22,3 +22,7 @@ print(df)
 
 df = dfl.determineMacHashDuration(filename)
 print(df)
+
+subset = dfl.getSubsetByRefSensorAndX(refSensor=22, x=0)
+print("showing the subset of data taken from df500")
+print(subset)
