@@ -148,24 +148,16 @@ function showPopup(cell, cellElement) {
   }
 
   for (let i = 0; i < cells.length; i++) {
-    if (i == 0) {
-      for (let k = 0; k < guesses_array.length; k++) {
-        if (cells[i].cellinfo.row == guesses_array[k][0] && cells[i].cellinfo.col == guesses_array[k][1]) {
-          cells[i].style.backgroundColor = `brown`;
-        }
-      }
-      continue;
-    }
-
     for (let k = 0; k < guesses_array.length; k++) {
       if (cells[i].cellinfo.row == guesses_array[k][0] && cells[i].cellinfo.col == guesses_array[k][1]) {
+        if (i == 0) {
+          cells[i].style.backgroundColor = `brown`;
+          continue;
+        }
         cells[i].style.backgroundColor = `green`;
       }
     }
-
   }
-
-  console.log(guesses_array);
 }
 
 // Resets cells to default state (background).
