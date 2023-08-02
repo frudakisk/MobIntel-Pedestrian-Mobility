@@ -1,7 +1,7 @@
 class Cell{
   /*This class will focus on the cells within the grid.
   Each cell will contain its own information that is callable */
-  constructor(row, col, location, corners, center, sensor_distances, calculated_RSSI, avg_RSSI, score, hasSensor) {
+  constructor(row, col, location, corners, center, sensor_distances, calculated_RSSI, avg_RSSI, score, hasSensor, localizationGuesses) {
     this.row = row;
     this.col = col;
     this.location = location;
@@ -12,6 +12,7 @@ class Cell{
     this.avg_RSSI = avg_RSSI;
     this.score = score;
     this.hasSensor = hasSensor;
+    this.localizationGuesses = localizationGuesses;
   }
 
   handleClick() {
@@ -65,9 +66,9 @@ function fetchData() {
 
 function processData(data){
   let datalength = Object.keys(data).length;
-  for (i=datalength-1; i >= 0; i--){
-    console.log(data[i])
-    let infoLocation = data[i].location.slice(1,-1); //get rid of ()
+  for (i = datalength - 1; i >= 0; i--) {
+    // console.log(data[i])
+    let infoLocation = data[i].location.slice(1, -1); //get rid of ()
     infoLocation = infoLocation.split(","); //turn to array [row,col]
     var rowNum = infoLocation[0];
     var colNum = infoLocation[1];
@@ -79,12 +80,15 @@ function processData(data){
     let actualRssi = data[i].avg_RSSI;
     let score = data[i].score;
     let hasSensor = data[i].hasSensor;
+    let localizationGuesses = data[i].localizationGuesses;
     createGridCell(rowNum, colNum, location, corners, center, sensorDistances,
-      calculatedRssi, actualRssi, score, hasSensor);
+        calculatedRssi, actualRssi, score, hasSensor, localizationGuesses);
   }
 }
 
-function captureDimensions(jsonData){
+var rowNum = 0;
+var colNum = 0;
+function captureDimensions(jsonData) {
   /*
   jsonData: the json file in question
   This function captures the correct number of rows and columns
@@ -97,19 +101,19 @@ function captureDimensions(jsonData){
   var jsonLastIndex = jsonData.length - 1;
   var lastEntry = jsonData[jsonLastIndex];
   var lastLocation = lastEntry['location']
-  let infoLocation = lastLocation.slice(1,-1); //get rid of ()
+  let infoLocation = lastLocation.slice(1, -1); //get rid of ()
   infoLocation = infoLocation.split(","); //turn to array [row,col]
-  var rowNum = Number(infoLocation[0]) + 1;
-  var colNum = Number(infoLocation[1]) + 1;
+  rowNum = Number(infoLocation[0]) + 1;
+  colNum = Number(infoLocation[1]) + 1;
   r.style.setProperty('--rows', rowNum);
   r.style.setProperty('--columns', colNum);
 }
 
 
-function createGridCell(row, column, location, corners, center, sensor_distances, calculated_RSSI, avg_RSSI, score, hasSensor){
+function createGridCell(row, column, location, corners, center, sensor_distances, calculated_RSSI, avg_RSSI, score, hasSensor, localizationGuesses) {
   /*Creates an instance of Cell class and also
   creates a cell element that will be apart of the grid*/
-  const cell = new Cell(row, column, location, corners, center, sensor_distances, calculated_RSSI, avg_RSSI, score, hasSensor);
+  const cell = new Cell(row, column, location, corners, center, sensor_distances, calculated_RSSI, avg_RSSI, score, hasSensor, localizationGuesses);
   const cellElement = document.createElement('div');
   cellElement.className = 'cell';
   cellElement.textContent = 'Cell';
@@ -125,11 +129,43 @@ function createGridCell(row, column, location, corners, center, sensor_distances
 // Show popup with "cell location" message
 function showPopup(cell, cellElement) {
   resetCells();
+  const cells = document.getElementsByClassName('cell');
   const popup = document.getElementById('popup');
   const popupText = document.getElementById('popupText');
   cellElement.style.backgroundColor = 'purple';
   popupText.innerHTML = cell.handleClick();
   popup.style.display = 'block';
+
+  let guesses_array = [];
+  let localizationGuesses = cellElement.cellinfo.localizationGuesses;
+  if (localizationGuesses.length > 2) {
+    let guesses_object = stringToObject(localizationGuesses);
+    let i = 0;
+    for (const key in guesses_object) {
+      let cell_number = getCell(key);
+      guesses_array.push(cell_number);
+    }
+  }
+
+  for (let i = 0; i < cells.length; i++) {
+    if (i == 0) {
+      for (let k = 0; k < guesses_array.length; k++) {
+        if (cells[i].cellinfo.row == guesses_array[k][0] && cells[i].cellinfo.col == guesses_array[k][1]) {
+          cells[i].style.backgroundColor = `brown`;
+        }
+      }
+      continue;
+    }
+
+    for (let k = 0; k < guesses_array.length; k++) {
+      if (cells[i].cellinfo.row == guesses_array[k][0] && cells[i].cellinfo.col == guesses_array[k][1]) {
+        cells[i].style.backgroundColor = `green`;
+      }
+    }
+
+  }
+
+  console.log(guesses_array);
 }
 
 // Resets cells to default state (background).
@@ -140,9 +176,9 @@ function resetCells() {
   let sensor_id = document.getElementById("sensor-select").value;
   console.log(sensor_id);
 
-  // Loop through the selected elements
+  // Loop through the selected elements set initial values and find max and min values
   for (let i = 0; i < cells.length; i++) {
-    cells[i].style.backgroundColor = `rgba(255,140,0,1)`;
+    cells[i].style.backgroundColor = `rgba(255, 140, 0, 1)`;
     let score_JSON = cells[i].cellinfo.score;
     score_JSON = score_JSON.replace(/'/g, '"');
     let score = JSON.parse(score_JSON);
@@ -151,25 +187,21 @@ function resetCells() {
     if (score == -9999) {
       continue;
     }
-    if (score >= max_score) {
-      max_score = score;
-    }
-    if (score <= min_score) {
-      min_score = score;
-    }
-  }
 
-  console.log(max_score);
-  console.log(min_score);
+    // need these scores in order to normalize the values for the background color opacity.
+    if (score >= max_score)
+      max_score = score;
+    if (score <= min_score)
+      min_score = score;
+  }
 
   for (let i = 0; i < cells.length; i++) {
     let score = normalize(cells[i].cellinfo.sensor_score, min_score, max_score);
-    /*console.log(cells[i].cellinfo.sensor_score);
-    console.log(score);*/
     cells[i].style.backgroundColor = `rgba(255,140,0, ${score})`;
   }
 }
 
+// utility function returns a value between 0 and 1
 function normalize(val, min_score, max_score) {
   if (val == -9999) {
     return 0;
@@ -177,6 +209,37 @@ function normalize(val, min_score, max_score) {
   return (val - min_score) / (max_score - min_score) * (1 - 0.3) + 0.3;
 }
 
+// utility function to turn a string value into an object.
+function stringToObject(input_string) {
+// Step 1: Remove curly braces { and }
+  const keyValuePairs = input_string.slice(1, -1);
+
+// Step 2: Split the string by commas to get individual key-value pairs
+  const pairsArray = keyValuePairs.split(/,\s*(?=\()/);
+
+// Step 3: Create the JavaScript object
+  const resultObject = {};
+
+  pairsArray.forEach(pair => {
+    const [property, value] = pair.split(': ');
+    resultObject[property] = parseFloat(value);
+  });
+
+  return resultObject;
+}
+
+// parse coordinates value as string and return array
+function getCell(input_string) {
+  const regex = /\((-?\d+),\s*(-?\d+)\)/;
+  const match = input_string.match(regex);
+
+  if (match) {
+    const numbersArray = [parseInt(match[1]), parseInt(match[2])];
+    return numbersArray;
+  }
+
+  return false
+}
 
 // Hide popup when clicked outside of it
 window.addEventListener('click', (event) => {
