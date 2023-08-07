@@ -42,18 +42,32 @@ grid_corners = gl.getGridCorners(coords_array) # stores the corner coordinates o
 emitter_coords = gl.getEmitterCoords(df500) # finds the coordinates of the all emitters
 emitter_locs = gl.getEmitterPositions(emitter_coords, latList, longList, grid_corners) # gets the location of emitters with in the grid
 grid = gl.makeGrid(grid_corners, latList, longList, emitter_locs, df500) # creates grid composed of GridSquare objects
-distance_error_array = gl.localizationTest(grid, df500, emitter_locs)
+#distance_error_array = gl.localizationTest(grid, df500, emitter_locs)
 
-while True:
-  rand_row = random.randint(0,df500.shape[0] - 1) # picks number from 0 to size of dataframe - 1
-  device_row = df500.iloc[rand_row] # gets random row
-  position = device_row[0:2] # stores ref_sensor and x
-  if emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'] != -1:
-    emitter_grid_loc, best_localization_guess = gl.gridLocalization(grid, df500, emitter_locs, rand_row)
-    print("Positions in question:\n", position)
-    print("location of the position in question:\n", emitter_grid_loc)
-    print("Showing best localization guesses\n", best_localization_guess)
-    break
+# while True:
+#   rand_row = random.randint(0,df500.shape[0] - 1) # picks number from 0 to size of dataframe - 1
+#   print("This is the random row selected\n", rand_row)
+#   device_row = df500.iloc[rand_row] # gets random row
+#   position = device_row[0:2] # stores ref_sensor and x
+#   if emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'] != -1: #emitter_locs is a dictionary with a string as the key, and grid loc as value
+#     emitter_grid_loc, best_localization_guess = gl.gridLocalization(grid, df500, emitter_locs, rand_row)
+#     print("This is emitter_locs: ", emitter_locs)
+#     print("Positions in question:\n", position)
+#     print("device row:\n", device_row)
+#     print("location of the position in question:\n", emitter_grid_loc)
+#     print("Showing best localization guesses\n", best_localization_guess)
+#     break
+
+#Print out all the positions that have an emitter in it
+#get all grid locations that have an emitter in it
+activeEmitters = gl.getActiveEmitterLocs(emitter_locs=emitter_locs)
+print(activeEmitters)
+localizationList = gl.gridLocalization(grid, df500, activeEmitters)
+print("locations of the positions in question & its best localization guesses\n")
+for item in localizationList:
+    print(item[0]) #should be just toe emitterLoc
+    print(item[1])
+
 
 print("Showing all locations that have a sensor in it")
 for i in range(len(grid)):
@@ -71,16 +85,18 @@ for i in range(len(grid)):
 gl.exportGridAsCsv(grid=grid, pathName="datasets/GridLibDriverGrid.csv")
 
 # #localizing csv file
+#This function will not work right now because we now have a list of data
+#we need to put in a csv file. So needs to be updated to take
+#localizationlist and write all data from it
 csvFile = "datasets/GridLibDriverGrid.csv"
 testOutput = "datasets/GridLibDriverGridWithLocalization.csv"
 gl.localizecsv(csvFilePath=csvFile, 
                csvOutputFilePath=testOutput,
-               position = emitter_grid_loc,
-               data = best_localization_guess)
+               localizationData=localizationList)
 
 
 
-#converting csv file to json file
+#converting localized csv file to json file
 csvFile = "datasets/GridLibDriverGridWithLocalization.csv"
 jsonPath = "webDevelopmentFiles/interactiveGrid/grid_json.json"
 gl.csvTojson(csvFile, jsonPath)

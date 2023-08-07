@@ -7,6 +7,7 @@ sys.path.append("pythonFiles")
 
 from Functionality import TrilaterationLib as tl
 from Functionality import PathLossLib as pl
+from Functionality import DataFiltrationLib as dfl
 
 # This is the class for a grid square
 class GridSquare:
@@ -525,62 +526,98 @@ def gridLocalizationTest(grid, df, emitter_locs, rand_row):
 
   return avg_method_error
 
-def gridLocalization(grid, df, emitter_locs, rand_row):
+def gridLocalization(grid, df, emitter_locs):
+  """
+  grid: a grid object created from makeGrid function in this library
+  df: a dataframe that contains x, ref_sensor and some rssi values
+  emitter_locs: a dictionary that contains emitter locations within the boundaries
+  of the current grid size. A string that represents
+  the ref_sensor and x value of an emitter location as the key, and the grid
+  coordinates of this position as the value. Can have multiple entries, or just one
+  Returns: A list containing tuples of information. These tuples will contain
+  two bits of information. tup[0] will contain the emitterLoc. tup[1] will contain
+  the dictionary of localization guesses for that emitterLoc.
+  """
+  #Instead of passing just one emitter_loc, I want to pass in 
+  #a list of activeEmitters and just go through each of them
+  random.seed(0) #ensures same rows are picked
+  localizationList = []
 
-  device_row = df.iloc[rand_row] # gets random row
-  position = device_row[0:2] # stores ref_sensor and x
+  for emitterRef, emitterLoc in emitter_locs.items():
+    split = emitterRef.split(",")
+    numSplit = [float(i) for i in split]
+    numSplit[0] = int(numSplit[0])
+    #Here is where I make a subset
+    subset = dfl.getSubsetByRefSensorAndX(refSensor=numSplit[0], x=numSplit[1])
 
-  RSSI = device_row[2:].to_dict() # stores RSSIs from row into dict
-  emitter_grid_loc = emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}']
-  print("AAAAAAAAHHHHHHHHH Actual RSSIs:",RSSI)
-  print(f'Emitter at: sensor = {int(position.iloc[1])}, x = {position.iloc[0]}')
-  print("Actual grid loc:",emitter_grid_loc)
+    #now pick random row in subset
+    rand_row = random.randint(0,subset.shape[0] - 1)
+    print("Random Row Index is: ", rand_row)
+    device_row = df.iloc[rand_row] #gets random row from subset
+    position = device_row[0:2] #stores ref_sensor and x
 
-  # iterates through grid
-  score_list = [] # list to store score dicts
-  itr = np.nditer(grid, flags=['multi_index', 'refs_ok'])
-  for x in itr:
-    scores = {'Location':itr.multi_index} # stores grid location
 
-    # calculates scores for entire grid
-    for i, j in grid[itr.multi_index].calculated_RSSI.items():
-      
-      # subtract calculated RSSI from device RSSI and multiply by log base 10 of sensor distance
-      # no absolute values
-      score = (RSSI['s'+i] - j) * math.log(grid[itr.multi_index].sensor_distances[i], 10)
 
-      # if sensor is less than 10 m away from cell, ignore it 
-      if grid[itr.multi_index].sensor_distances[i] > 10:
-        scores.update({i: score})
-      
-    # add scores for cell into list 
-    score_list.append(scores)
+    RSSI = device_row[2:].to_dict() # stores RSSIs from row into dict
+    #emitter_grid_loc = emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}']
+    #emiter_grid_loc is just the tile location, which in this version is
+    #just the emitterLoc value from for loop
 
-  # create dataframe from list of score dicts
-  score_df = pd.DataFrame(score_list, columns=['Location','57','20','05','34','22','06','31','36','35'])
-  score_df = score_df.set_index('Location')
 
-  # take average of every row and sort in ascending order
-  score_mean = score_df.mean(axis=1).sort_values(ascending=True)
-  #display(score_mean)
 
-  # gets latitude and longitude distance from actual location
-  lat_dist_avg = abs(score_mean.index[0][0] - emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'][0])
-  long_dist_avg = abs(score_mean.index[0][1] - emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'][1])
+    print("AAAAAAAAHHHHHHHHH Actual RSSIs:",RSSI)
+    print(f'Emitter at: sensor = {int(position.iloc[1])}, x = {position.iloc[0]}')
+    print("Actual grid loc:",emitterLoc)
 
-  # takes latitude and longitude distance and uses pythagorean theorem to calculate distance error
-  avg_method_error = round(np.sqrt(lat_dist_avg**2 + long_dist_avg**2), 2)
+    # iterates through grid
+    score_list = [] # list to store score dicts
+    itr = np.nditer(grid, flags=['multi_index', 'refs_ok'])
+    for x in itr:
+      scores = {'Location':itr.multi_index} # stores grid location
 
-  print("Guessed loc from average:", score_mean.index[0])
-  print("Estimated RSSI for this loc:", grid[score_mean.index[0]].calculated_RSSI)
-  print('Estimation error from taking average:', avg_method_error, 'meters') # Pythagorean Theorem to calc distance
-  print()
+      # calculates scores for entire grid
+      for i, j in grid[itr.multi_index].calculated_RSSI.items():
+        
+        # subtract calculated RSSI from device RSSI and multiply by log base 10 of sensor distance
+        # no absolute values
+        score = (RSSI['s'+i] - j) * math.log(grid[itr.multi_index].sensor_distances[i], 10)
 
-  #converting to dict bc this is the standard for this file type
-  score_mean = score_mean[:5]
-  score_dict = score_mean.to_dict()
+        # if sensor is less than 10 m away from cell, ignore it 
+        if grid[itr.multi_index].sensor_distances[i] > 10:
+          scores.update({i: score})
+        
+      # add scores for cell into list 
+      score_list.append(scores)
 
-  return emitter_grid_loc, score_dict #Changed to top 5 instead of top 10 for smaller grid
+    # create dataframe from list of score dicts
+    score_df = pd.DataFrame(score_list, columns=['Location','57','20','05','34','22','06','31','36','35'])
+    score_df = score_df.set_index('Location')
+
+    # take average of every row and sort in ascending order
+    score_mean = score_df.mean(axis=1).sort_values(ascending=True)
+    #display(score_mean)
+
+    # gets latitude and longitude distance from actual location
+    lat_dist_avg = abs(score_mean.index[0][0] - emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'][0])
+    long_dist_avg = abs(score_mean.index[0][1] - emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'][1])
+
+    # takes latitude and longitude distance and uses pythagorean theorem to calculate distance error
+    avg_method_error = round(np.sqrt(lat_dist_avg**2 + long_dist_avg**2), 2)
+
+    print("Guessed loc from average:", score_mean.index[0])
+    print("Estimated RSSI for this loc:", grid[score_mean.index[0]].calculated_RSSI)
+    print('Estimation error from taking average:', avg_method_error, 'meters') # Pythagorean Theorem to calc distance
+    print()
+
+    #converting to dict bc this is the standard for this file type
+    score_mean = score_mean[:5]
+    score_dict = score_mean.to_dict()
+
+    tup = (emitterLoc, score_dict)
+    localizationList.append(tup)
+
+  #should return emitterLoc instead of emitter_grid_loc now
+  return localizationList
 
 def csvTojson(csvFilePath, jsonPath):
   """
@@ -610,18 +647,21 @@ def csvTojson(csvFilePath, jsonPath):
     jsonf.write(json.dumps(data, indent=4))
 
 
-def localizecsv(csvFilePath, csvOutputFilePath, position, data):
+def localizecsv(csvFilePath, csvOutputFilePath, localizationData):
   """
   csvFilePath: original csv file we plan to manipulate. Should be the csv file
   for the grid
   csvOutputFilePath: name of new version of csvFilePath
   newColumnName: name of new column to be added at the end of the rows
-  position: The location we want to put the data into
-  data: a dictionary of localization guesses
+  localizationData: this parameter is a list object. The items in this list are
+  lists that contain two types, at [0] a tuple the represents a location on a grid
+  and at [1] a dictionary that represents the localization guesses for that grid spot
 
-  This function will add in data to the localizationGuesses column of each row.
-  We read through the csv file, find the row with the same position as the
-  parameter, and then input the data to the localizationGuesses column of that row
+  This function will add in data to the localizationGuesses column of each appropriate row.
+  We read through a clean csv file, the the rows with the same positions as those in 
+  localizationData, and then input the data to the localizationGuesses column of that row.
+  A new csv file is generated with this new information so that we preserve the unaltered version
+  while also having a new version with this extended data.
   """
   with open(csvFilePath, 'r') as csvInput:
     with open(csvOutputFilePath, 'w') as csvoutput:
@@ -629,13 +669,30 @@ def localizecsv(csvFilePath, csvOutputFilePath, position, data):
       reader = csv.reader(csvInput)
 
       all = []
-      row = next(reader)
+      row = next(reader) #header row, not needed to read
       all.append(row)
 
       for row in reader:
-        if str(row[1]) == str(position):
-          print("found a match!")
-          row[12] = data
+        for data in localizationData:
+          if str(row[1]) == str(data[0]):
+            print("found a match!")
+            row[12] = data[1]
+            break #stop for loop once we find a match, save some time
         all.append(row)
 
       writer.writerows(all)
+
+def getActiveEmitterLocs(emitter_locs):
+  """
+  emitter_locs: a dictionary that contains a bunch of emitter locations
+  emitter_locs contains emitters that are not always active in the current grid.
+  So this function returns the emitter locations that are currently in the grid.
+  This function does not need the grid dimensions, because that is taken care of
+  in the getEmitterPositions and getEmitterCoordinates function where we are given all emitter positions
+  Within the given dataframe
+  """
+  activeEmitters = {}
+  for key, val in emitter_locs.items():
+    if val != -1:
+        activeEmitters[key] = val
+  return activeEmitters
