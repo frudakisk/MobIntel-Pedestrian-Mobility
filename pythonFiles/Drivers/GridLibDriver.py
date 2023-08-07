@@ -92,8 +92,7 @@ csvFile = "datasets/GridLibDriverGrid.csv"
 testOutput = "datasets/GridLibDriverGridWithLocalization.csv"
 gl.localizecsv(csvFilePath=csvFile, 
                csvOutputFilePath=testOutput,
-               position = emitter_grid_loc,
-               data = best_localization_guess)
+               localizationData=localizationList)
 
 
 

@@ -647,18 +647,21 @@ def csvTojson(csvFilePath, jsonPath):
     jsonf.write(json.dumps(data, indent=4))
 
 
-def localizecsv(csvFilePath, csvOutputFilePath, position, data):
+def localizecsv(csvFilePath, csvOutputFilePath, localizationData):
   """
   csvFilePath: original csv file we plan to manipulate. Should be the csv file
   for the grid
   csvOutputFilePath: name of new version of csvFilePath
   newColumnName: name of new column to be added at the end of the rows
-  position: The location we want to put the data into
-  data: a dictionary of localization guesses
+  localizationData: this parameter is a list object. The items in this list are
+  lists that contain two types, at [0] a tuple the represents a location on a grid
+  and at [1] a dictionary that represents the localization guesses for that grid spot
 
-  This function will add in data to the localizationGuesses column of each row.
-  We read through the csv file, find the row with the same position as the
-  parameter, and then input the data to the localizationGuesses column of that row
+  This function will add in data to the localizationGuesses column of each appropriate row.
+  We read through a clean csv file, the the rows with the same positions as those in 
+  localizationData, and then input the data to the localizationGuesses column of that row.
+  A new csv file is generated with this new information so that we preserve the unaltered version
+  while also having a new version with this extended data.
   """
   with open(csvFilePath, 'r') as csvInput:
     with open(csvOutputFilePath, 'w') as csvoutput:
@@ -666,13 +669,15 @@ def localizecsv(csvFilePath, csvOutputFilePath, position, data):
       reader = csv.reader(csvInput)
 
       all = []
-      row = next(reader)
+      row = next(reader) #header row, not needed to read
       all.append(row)
 
       for row in reader:
-        if str(row[1]) == str(position):
-          print("found a match!")
-          row[12] = data
+        for data in localizationData:
+          if str(row[1]) == str(data[0]):
+            print("found a match!")
+            row[12] = data[1]
+            break #stop for loop once we find a match, save some time
         all.append(row)
 
       writer.writerows(all)
