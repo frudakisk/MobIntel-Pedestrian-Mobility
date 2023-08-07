@@ -61,6 +61,7 @@ grid = gl.makeGrid(grid_corners, latList, longList, emitter_locs, df500) # creat
 #Print out all the positions that have an emitter in it
 #get all grid locations that have an emitter in it
 activeEmitters = gl.getActiveEmitterLocs(emitter_locs=emitter_locs)
+print("showing active emitters in the grid")
 print(activeEmitters)
 localizationList = gl.gridLocalization(grid, df500, activeEmitters)
 print("locations of the positions in question & its best localization guesses\n")

@@ -52,11 +52,11 @@ def adjustedLatitude(t, y):
 def visualizeGrid(origin, lat_dist, long_dist, meridianDist, parallelDist):
   """This function will plot the grid onto a folium map
   Origin: southwest point of grid
-  lat_dist: how far, in meters, the grid will expand north
-  long_dist: how far, in meters, the grid will expand east
+  lat_dist: how far, in meters, the grid will expand east
+  long_dist: how far, in meters, the grid will expand north
   meridianDist: how many steps, in meters, are between captured meridian lines
   parallelDistL how many steps, in meters, are between captured parallel lines
-  Returns: a folium map onject
+  Returns: a folium map object
   """
   latList, longList = createGrid(origin, lat_dist, long_dist, meridianDist, parallelDist)
   latList = latList[:-1]
@@ -348,7 +348,7 @@ def makeGrid(grid_corners, latList, longList, emitter_locs, df):
 def exportGridAsCsv(grid, pathName):
   yea = grid.flatten()
   grid_df = pd.DataFrame.from_records(vars(o) for o in yea)
-  grid_df.to_csv(pathName)
+  grid_df.to_csv(pathName, index=False)
 
 
 def sensorLocationsDict(sensorList):
@@ -428,11 +428,16 @@ def averageActualRSSI(emitter_locs, df, ref_sensor_list):
 def completeGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance, df500):
   """
   origin: a tuple of coordinates where the bottom left of the grid will start
-  latDistance: how far we want the latitide lines to go
-  longDistance: how far we want the longitidue lines to go
+  latDistance: how far we want the latitide lines to go (horizontal lines)
+  longDistance: how far we want the longitidue lines to go (vertical lines)
   adjustedMeridianDistance: the space between meridian lines
   adjustedParallelDistance: the space between parallel lines
   df500: should be the df500 file
+  The result of this function will return all created objects that are constructed while creating a grid.
+  This information will be in the form of a tuple as (grid, emitter_locs, emitter_coords, grid_corners, coords_array, latList, longList)
+  calling an index from this tuple will give you the information you want went you create a grid.
+  There were a lot of functions that go into creating a grid, so it was a lot easier to put them all into one
+  function
   """
   latList, longList = createGrid(origin=origin, latDistance=latDistance, longDistance=longDistance,
                                   adjustedMeridianDistance=adjustedMeridianDistance, 
@@ -442,7 +447,7 @@ def completeGrid(origin, latDistance, longDistance, adjustedMeridianDistance, ad
   emitter_coords = getEmitterCoords(df500) # finds the coordinates of the all emitters
   emitter_locs = getEmitterPositions(emitter_coords, latList, longList, grid_corners) # gets the location of emitters with in the grid
   grid = makeGrid(grid_corners, latList, longList, emitter_locs, df500) # creates grid composed of GridSquare objects
-  return grid
+  return (grid, emitter_locs, emitter_coords, grid_corners, coords_array, latList, longList)
 
 def localizationTest(grid, df, emitter_locs):
 
