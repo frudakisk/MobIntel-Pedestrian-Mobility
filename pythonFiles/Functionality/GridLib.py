@@ -345,10 +345,10 @@ def makeGrid(grid_corners, latList, longList, emitter_locs, df):
   return grid
 
 
-def exportGridAsCsv(grid, pathName):
+def exportGridAsCsv(grid, pathName, withIndex):
   yea = grid.flatten()
   grid_df = pd.DataFrame.from_records(vars(o) for o in yea)
-  grid_df.to_csv(pathName, index=False)
+  grid_df.to_csv(pathName, index=withIndex)
 
 
 def sensorLocationsDict(sensorList):
@@ -635,7 +635,7 @@ def csvTojson(csvFilePath, jsonPath):
   with open(csvFilePath, encoding='utf-8') as csvf:
     csvReader = csv.DictReader(csvf)
     for rows in csvReader:
-      del rows[""]
+      #del rows[""] #getting rid of empty row?
       for key, value in rows.items():
         if key == "mode_RSSI":
           rows[key] = int(value)

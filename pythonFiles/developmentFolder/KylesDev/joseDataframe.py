@@ -40,7 +40,7 @@ activeEmitters = gl.getActiveEmitterLocs(emitter_locs=gridTuple[1])
 print("showing active emitters in the grid")
 print(activeEmitters)
 
-gl.exportGridAsCsv(grid=gridTuple[0], pathName="datasets/170x25LargeGrid.csv")
+gl.exportGridAsCsv(grid=gridTuple[0], pathName="datasets/170x25LargeGrid.csv", withIndex=False)
 
 
 df = pd.read_csv("datasets/170x25LargeGrid.csv")

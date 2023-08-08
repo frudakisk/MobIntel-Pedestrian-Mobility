@@ -83,7 +83,7 @@ for i in range(len(grid)):
 #print(estimated_device_loc)
 
 #export grid as csv
-gl.exportGridAsCsv(grid=grid, pathName="datasets/GridLibDriverGrid.csv")
+gl.exportGridAsCsv(grid=grid, pathName="datasets/GridLibDriverGrid.csv", withIndex=True)
 
 # #localizing csv file
 #This function will not work right now because we now have a list of data
