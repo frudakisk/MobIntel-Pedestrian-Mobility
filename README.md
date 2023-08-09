@@ -40,6 +40,7 @@ functions.
 
 * rssiToDistance(rssi)
 * rssiToDistanceV2(rssi)
+
 #### PathLossLib
 This library is intended to hold all functions that are related to path loss models. Path loss models
 are mathematical algorithms that determine the "ideal" rssi value based on certain values such as distance, 
@@ -73,7 +74,13 @@ can create any size grid on an location on the earth.
 * sensorMaxCoords(sensorList, latList, longList)
 * containsSensor(tile, sensorList, latList, longList)
 * averageActualRSSI(emitter_locs, df, ref_sensor_list)
+* completeGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance, df500)
+* localizationTest(grid, df, emitter_locs)
+* gridLocalizationTest(grid, df, emitter_locs, rand_row)
+* gridLocalization(grid, df, emitter_locs)
 * csvTojson(csvFilePath, jsonPath)
+* localizecsv(csvFilePath, csvOutputFilePath, localizationData)
+* getActiveEmitterLocs(emitter_locs)
 
 #### TrilaterationLib
 This library includes functionality that was used to trilaterate points on map. This library uses other
@@ -117,6 +124,7 @@ related things.
 * deviceInSensorAreaDuration(probingTimes, DURATION_LIMIT)
 * newDetermineDuration(row, durationLimit)
 * determineMacHashDuration(filename)
+* getSubsetByRefSensorAndX(refSensor, x)
 
 #### ExploritoryAnalysisLib
 This library was of separate use during the project. When we were exploring forecasting
