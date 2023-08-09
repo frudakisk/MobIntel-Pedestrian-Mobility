@@ -136,30 +136,44 @@ function showPopup(cell, cellElement) {
   popupText.innerHTML = cell.handleClick();
   popup.style.display = 'block';
 
-  let guesses_array = [];
+  let guesses_array = []; //will hold keys - tile locations
+  let guesses_scores_array = [] //will hold values - localization guesses
   let localizationGuesses = cellElement.cellinfo.localizationGuesses;
   if (localizationGuesses.length > 2) {
     let guesses_object = stringToObject(localizationGuesses);
     let i = 0;
+    //guesses_object is a dictionary object
+    //guesses object has the localization score as the value, and tile spot as key
+    console.log("guesses Object: ", guesses_object)
     for (const key in guesses_object) {
       let cell_number = getCell(key);
       guesses_array.push(cell_number);
+      guesses_scores_array.push(guesses_object[key]);
     }
   }
 
+  let stored_score = 0;
   for (let i = 0; i < cells.length; i++) {
+    //going through each created cell
     for (let k = 0; k < guesses_array.length; k++) {
+      //comparing each tile coord to the current iterated cell tile coord
       if (cells[i].cellinfo.row == guesses_array[k][0] && cells[i].cellinfo.col == guesses_array[k][1]) {
-        if (i == 0) {
-          cells[i].style.backgroundColor = `brown`;
-          continue;
+        current_score = guesses_scores_array[k];
+        if(stored_score > current_score) {
+          stored_score = current_score;
+          //store the postion of the cell that has that score closest to 0
+          highestScoreCell = cells[i];
         }
+
+        //turning all localizations green
         cells[i].style.backgroundColor = `green`;
       }
     }
   }
+  //turn highest score brown
+  highestScoreCell.style.backgroundColor = `brown`;
 }
-
+ 
 // Resets cells to default state (background).
 function resetCells() {
   let min_score = 100;

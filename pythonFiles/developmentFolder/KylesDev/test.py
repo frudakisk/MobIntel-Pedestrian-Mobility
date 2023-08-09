@@ -17,3 +17,9 @@ for value in df["tx_coord"]:
 
 print("checking if there are any nans")
 print(df[df['tx_coord'].apply(lambda x: isinstance(x, float))])
+
+file = "datasets/block_500_only.csv"
+df500 = pd.read_csv(file)
+
+print(df500["ref_sensor"].unique())
+

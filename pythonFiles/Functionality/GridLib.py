@@ -635,7 +635,7 @@ def csvTojson(csvFilePath, jsonPath):
   with open(csvFilePath, encoding='utf-8') as csvf:
     csvReader = csv.DictReader(csvf)
     for rows in csvReader:
-      #del rows[""] #getting rid of empty row?
+      del rows[""] #getting rid of empty row?
       for key, value in rows.items():
         if key == "mode_RSSI":
           rows[key] = int(value)
