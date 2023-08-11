@@ -450,6 +450,16 @@ def completeGrid(origin, latDistance, longDistance, adjustedMeridianDistance, ad
   return (grid, emitter_locs, emitter_coords, grid_corners, coords_array, latList, longList)
 
 def localizationTest(grid, df, emitter_locs):
+  """
+  grid:
+  df:
+  emitter_locs:
+  returns: A historgram graph that shows the distance error of localized probe requests
+  IDK IF ITS FOR ONE EMITTER OR ALL EMITTERS
+  I will also be returing a dataframe that contains all the rows in the df that were
+  considered emitter locations plus their distance error after localization
+  """
+  data = list() #to hold data for the returned data frame
 
   random.seed(0) # ensures same numbers are chosen
   count = 0
@@ -462,21 +472,29 @@ def localizationTest(grid, df, emitter_locs):
     device_row = df.iloc[rand_row] # gets random row 
     position = device_row[0:2] # stores ref_sensor and x
     
+    #just focusing in on the emitter locations in this if statement
     if emitter_locs[f'{int(position.iloc[1])}, {position.iloc[0]}'] != -1:
       distance_error = gridLocalizationTest(grid, df, emitter_locs, rand_row) # calls localization function
       results[count] = distance_error # stores distance error results
+      #add distance error to device_row series
+      ser = pd.Series([distance_error])
+      ser.index = ["distance_error"]
+      device_row = pd.concat([device_row, ser])
+      data.append(device_row)
       count += 1
 
   print("Mean: ", results.mean())
   print("Median: ", np.median(results))
   fig, ax = plt.subplots(figsize=(15,5))
   plt.hist(results, bins=20, linewidth=0.5, edgecolor="white")
+  plt.axvline(x=np.median(results), color='red', linestyle='--') #median line
   ax.set_xlabel('distance error')
   ax.set_ylabel('count')
   ax.set_title(f'log with distance > 10, Grid shape: {grid.shape}, Mean: {round(results.mean(), 2)}, Median: {np.median(results)}')
   plt.show()
   
-  return results
+  result_df = pd.DataFrame(data=data)
+  return results, result_df
 
 def gridLocalizationTest(grid, df, emitter_locs, rand_row):
 
