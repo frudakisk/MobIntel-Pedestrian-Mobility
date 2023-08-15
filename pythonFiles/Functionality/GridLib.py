@@ -497,6 +497,14 @@ def localizationTest(grid, df, emitter_locs):
   return results, result_df
 
 def gridLocalizationTest(grid, df, emitter_locs, rand_row):
+  """
+  grid:
+  df:
+  emitter_locs:
+  rand_row:
+  Returns:
+  Description:
+  """
 
   device_row = df.iloc[rand_row] # gets random row
   position = device_row[0:2] # stores ref_sensor and x
@@ -596,9 +604,10 @@ def gridLocalization(grid, df, emitter_locs):
     score_list = [] # list to store score dicts
     itr = np.nditer(grid, flags=['multi_index', 'refs_ok'])
     for x in itr:
+      #iterate through tiles
       scores = {'Location':itr.multi_index} # stores grid location
 
-      # calculates scores for entire grid
+      # calculates scores for entire grid, this for loop finds the scores for the 9 sensors
       for i, j in grid[itr.multi_index].calculated_RSSI.items():
         
         # subtract calculated RSSI from device RSSI and multiply by log base 10 of sensor distance
@@ -608,8 +617,9 @@ def gridLocalization(grid, df, emitter_locs):
         # if sensor is less than 10 m away from cell, ignore it 
         if grid[itr.multi_index].sensor_distances[i] > 10:
           scores.update({i: score})
-        
-      # add scores for cell into list 
+      #scores has a score for every tile after doing some math with the rssi values from the
+
+      # add scores for cell into list. Score_list has a bunch of dictionaries (scores). entry is a single tile but all tiles are in here
       score_list.append(scores)
 
     # create dataframe from list of score dicts
@@ -641,6 +651,63 @@ def gridLocalization(grid, df, emitter_locs):
 
   #should return emitterLoc instead of emitter_grid_loc now
   return localizationList
+
+
+def generateLocalizationGuesses(row, grid, numberOfGuesses, data):
+  """
+  row: current row in joseData that has real rssi values
+  grid: dataframe of the 170x25 grid the row initially comes from
+  numberOfGuesses: the amount of localization guesses we want to return. 1 is the best
+  data: a list that will take dictionaries in preparation for a dataframe data
+
+  Returns: Does not return anything explicitly, but does add information to data, which
+  should be a list variable outside of the function call
+
+  Description: This function is meant to be used in a lambda function for going over rows in the joseData.csv.
+  We basically find the best localization guess for each row from the joseData.csv file and appended it to the
+  original row. We compile all these updated rows and create data that is prepared for a dataframe (a list with dictionaries)
+  """
+  #turn row into dict
+  rowDict = row.to_dict() #will be appending best localization to this dict
+  #gather the rssi values of the current row
+  RSSI = row[1:10]
+  #begin iteration through the grid
+  score_list = []
+  itr = np.nditer(grid, flags=['multi_index', 'refs_ok'])
+  for x in itr:
+    scores = {'Location':itr.multi_index} #contains the current grid location we are gathering scores for
+
+    #calculate scores for the entire grid
+    receiverNumber = 0
+    for i, j in grid[itr.multi_index].calculated_RSSI.items(): #KeyError???
+      #we are using the calculated rssi for the current tile location
+      score = (RSSI["receiver_"+str(receiverNumber)] - j) * math.log(grid[itr.multi_index].sensor_distances[i], 10)
+      receiverNumber += 1
+
+      # if sensor is less than 10 m away from cell, ignore it 
+      if grid[itr.multi_index].sensor_distances[i] > 10:
+        scores.update({i: score})
+
+    score_list.append(scores)
+
+  # create dataframe from list of score dicts
+  score_df = pd.DataFrame(score_list, columns=['Location','57','20','05','34','22','06','31','36','35'])
+  score_df = score_df.set_index('Location')
+
+  # take average of every row and sort in ascending order
+  score_mean = score_df.mean(axis=1).sort_values(ascending=True)
+
+  #converting to dict bc this is the standard for this file type
+  score_mean = score_mean[:numberOfGuesses]
+  score_dict = score_mean.to_dict()
+
+  #store the only key in this dict
+  keyName = list(score_dict.keys())[0]
+
+  rowDict.update({"best_tile_localization": keyName })
+  rowDict.update({"best_Localization_value": score_dict.get(keyName)})
+  data.append(rowDict) #adding to global data so we can turn it into a dataframe
+
 
 def csvTojson(csvFilePath, jsonPath):
   """
