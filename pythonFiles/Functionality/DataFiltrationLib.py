@@ -171,10 +171,11 @@ def getSubsetByRefSensorAndX(refSensor, x):
     newDf = df.query("ref_sensor == @refSensor & x == @x").copy()
     return newDf
 
-def convertFanchen():
+def convertFanchen(fanchenFileName):
     # block reads and organizes fanchen's dataset, renames sensor ids to actual
 
-    fanchen_data = pd.read_csv("datasets/RSSI_localization_data_WPB/2022_11_17.csv")
+    #fanchen_data should read from datasets/RSSI_localization_data_WPB/2022_11_XX.csv
+    fanchen_data = pd.read_csv(fanchenFileName)
     # drops unnecessary columns, converts datatypes to smaller format, renames column
     fanchen_data = fanchen_data.drop(columns=["label"])
     fanchen_data = fanchen_data.astype("float32")

@@ -12,39 +12,14 @@ Steps:
 5. New dataframe will have tile location, rssi from 9 sensors, and class_label instead of x ,ref_sensor, rssi from 9 sensors
 """
 
-import sys
+import sys, os
 sys.path.append('pythonFiles')
 
-from Functionality import GridLib as gl
+from Functionality import GridLib as gl, DataFiltrationLib as dl, Constants as c
 import pandas as pd
-
-#import data
-# df500 = pd.read_csv("datasets/block_500_only.csv", engine='python')
-# df500 = df500.rename(columns={"Unnamed: 0": "class_label"})
-
-# print(df500) #testing
 
 origin = (26.71333451697524, -80.05695531266622)
 
-
-# #create grid
-# gridTuple = gl.completeGrid(origin= origin,
-#                 latDistance= 170,
-#                 longDistance= 25,
-#                 adjustedMeridianDistance= 1,
-#                 adjustedParallelDistance= 1,
-#                 df500= df500)
-
-# #checking emitter locations in grid
-# activeEmitters = gl.getActiveEmitterLocs(emitter_locs=gridTuple[1])
-# print("showing active emitters in the grid")
-# print(activeEmitters)
-
-# gl.exportGridAsCsv(grid=gridTuple[0], pathName="datasets/170x25LargeGrid.csv", withIndex=False)
-
-
-# df = pd.read_csv("datasets/170x25LargeGrid.csv")
-# print(df)
 
 def transformData(row, newDataList, activeEmitters, gridTable):
     """
@@ -84,61 +59,6 @@ def transformData(row, newDataList, activeEmitters, gridTable):
 
     #add dictionary to list
     newDataList.append(newRowData)
-
-    
-
-
-# #Main 
-# joseData = []
-# df500.apply(lambda row: transformData(row, joseData, activeEmitters, df), axis=1 )
-# josedf = pd.DataFrame(data=joseData)
-# print(josedf)
-
-# #change the order of the columns just to have same layout as Joses data
-# josedf = josedf.iloc[:,[0,2,3,4,5,6,7,8,9,10,1]]
-
-# print(josedf)
-
-# josedf.to_csv("datasets/JoseData.csv", index=False)
-
-# test = pd.read_csv("datasets/JoseData.csv")
-# print(test)
-
-
-#make another one for jose with same block just with different data from a different day
-# df500_2 = pd.read_csv("datasets/block_500_11_16.csv")
-# df500_2 = df500_2.rename(columns={"Unnamed: 0": "class_label"})
-
-# grid_tuple_2 = gl.completeGrid(origin= origin,
-#                 latDistance= 170,
-#                 longDistance= 25,
-#                 adjustedMeridianDistance= 1,
-#                 adjustedParallelDistance= 1,
-#                 df500= df500_2)
-
-# activeEmitters = gl.getActiveEmitterLocs(emitter_locs=grid_tuple_2[1])
-
-# #make csv file for this grid
-# gl.exportGridAsCsv(grid=grid_tuple_2[0], pathName="datasets/170x25LargeGrid_11_16.csv", withIndex=False)
-
-# #read same file
-# df_2 = pd.read_csv("datasets/170x25LargeGrid_11_16.csv")
-
-# joseData = []
-# df500_2.apply(lambda row: transformData(row, joseData, activeEmitters, df_2), axis=1 )
-# josedf = pd.DataFrame(data=joseData)
-# print(josedf)
-
-# #change the order of the columns just to have same layout as Joses data
-# josedf = josedf.iloc[:,[0,2,3,4,5,6,7,8,9,10,1]]
-
-# print(josedf)
-
-# josedf.to_csv("datasets/JoseData_11_16.csv", index=False)
-
-# print("THIS IS THE NEW JOSE DATA")
-# test = pd.read_csv("datasets/JoseData_11_16.csv")
-# print(test)
 
 #turn this whole process into one function
 def fanchenToJoseData(inputFileName, outputFileName, gridFileName, gridOrigin):
@@ -194,7 +114,29 @@ def fanchenToJoseData(inputFileName, outputFileName, gridFileName, gridOrigin):
 
 
 #main - call this function
-fanchenToJoseData(inputFileName="datasets/block_500_11_16.csv",
-                    outputFileName="datasets/JoseData_11_16.csv",
-                    gridFileName="datasets/170x25LargeGrid_11_16.csv",
-                    gridOrigin=origin)
+# fanchenToJoseData(inputFileName="datasets/block_500_11_16.csv",
+#                     outputFileName="datasets/JoseData_11_16.csv",
+#                     gridFileName="datasets/170x25LargeGrid_11_16.csv",
+#                     gridOrigin=origin)
+
+
+#need to convert each file from RSSI_localization_data_WPB to a block_500 format
+directory = "datasets/RSSI_localization_data_WPB"
+for filename in os.listdir(directory):
+    f = os.path.join(directory, filename)
+    if os.path.isfile(f):
+        print(f"Starting processing of file: {f}")
+        date = f[-14:-4]
+        block_500, block_400 = dl.convertFanchen(fanchenFileName=f)
+        save_filename = f"datasets/DataForJose/block_500_{date}.csv"
+        block_500.to_csv(save_filename)
+        if not block_500.empty: #if the block data is not empty, convert
+            #convert each of the block 500 format csv files into a jose file
+            joseOutputName = f"datasets/DataForJose/JoseData_{date}.csv"
+            gridFileName = f"datasets/DataForJose/170x25LargeGrid_{date}.csv"
+            fanchenToJoseData(inputFileName=save_filename,
+                            outputFileName=joseOutputName,
+                            gridFileName=gridFileName,
+                            gridOrigin=c.GRID_170x25_ORIGIN)
+            print(f"Done with file: {f}")
+print("Processing complete!")
