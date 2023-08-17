@@ -3,23 +3,15 @@ import sys
 sys.path.append('pythonFiles')
 
 import pandas as pd
+from Functionality import GridLib as gl
+from Functionality import PathLossLib as pl
 
-df = pd.read_csv('datasets/JoseData.csv')
+# gl.csvTojson(csvFilePath='datasets/170x25LargeGrid.csv', 
+#              jsonPath='webDevelopmentFiles/interactiveGrid/170x25LargeGrid_json.json',
+#              removeIndex=False)
 
-print(df.query("tx_coord == 'NaN'"))
+df = pd.read_parquet("datasets/fanchen_trilateration_2022_11_13.parquet")
+print(df)
 
-print(df["tx_coord"])
-
-for value in df["tx_coord"]:
-    if "(" not in str(value):
-        print(value)
-        print(type(value))
-
-print("checking if there are any nans")
-print(df[df['tx_coord'].apply(lambda x: isinstance(x, float))])
-
-file = "datasets/block_500_only.csv"
-df500 = pd.read_csv(file)
-
-print(df500["ref_sensor"].unique())
-
+df= pd.read_parquet("datasets/1678683600000-sensor_1.parquet")
+print(df)

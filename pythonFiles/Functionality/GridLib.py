@@ -709,7 +709,7 @@ def generateLocalizationGuesses(row, grid, numberOfGuesses, data):
   data.append(rowDict) #adding to global data so we can turn it into a dataframe
 
 
-def csvTojson(csvFilePath, jsonPath):
+def csvTojson(csvFilePath, jsonPath, removeIndex=False):
   """
   csvFilePath: The path that the current csv file is located
   jsonPath: the path where you want the new json file to be located
@@ -720,7 +720,8 @@ def csvTojson(csvFilePath, jsonPath):
   with open(csvFilePath, encoding='utf-8') as csvf:
     csvReader = csv.DictReader(csvf)
     for rows in csvReader:
-      del rows[""] #getting rid of empty row?
+      if removeIndex == True:
+        del rows[""] #getting rid of index row if the df has one
       for key, value in rows.items():
         if key == "mode_RSSI":
           rows[key] = int(value)

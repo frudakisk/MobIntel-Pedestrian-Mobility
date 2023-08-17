@@ -19,32 +19,32 @@ from Functionality import GridLib as gl
 import pandas as pd
 
 #import data
-df500 = pd.read_csv("datasets/block_500_only.csv", engine='python')
-df500 = df500.rename(columns={"Unnamed: 0": "class_label"})
+# df500 = pd.read_csv("datasets/block_500_only.csv", engine='python')
+# df500 = df500.rename(columns={"Unnamed: 0": "class_label"})
 
-print(df500) #testing
+# print(df500) #testing
 
 origin = (26.71333451697524, -80.05695531266622)
 
 
-#create grid
-gridTuple = gl.completeGrid(origin= origin,
-                latDistance= 170,
-                longDistance= 25,
-                adjustedMeridianDistance= 1,
-                adjustedParallelDistance= 1,
-                df500= df500)
+# #create grid
+# gridTuple = gl.completeGrid(origin= origin,
+#                 latDistance= 170,
+#                 longDistance= 25,
+#                 adjustedMeridianDistance= 1,
+#                 adjustedParallelDistance= 1,
+#                 df500= df500)
 
-#checking emitter locations in grid
-activeEmitters = gl.getActiveEmitterLocs(emitter_locs=gridTuple[1])
-print("showing active emitters in the grid")
-print(activeEmitters)
+# #checking emitter locations in grid
+# activeEmitters = gl.getActiveEmitterLocs(emitter_locs=gridTuple[1])
+# print("showing active emitters in the grid")
+# print(activeEmitters)
 
-gl.exportGridAsCsv(grid=gridTuple[0], pathName="datasets/170x25LargeGrid.csv", withIndex=False)
+# gl.exportGridAsCsv(grid=gridTuple[0], pathName="datasets/170x25LargeGrid.csv", withIndex=False)
 
 
-df = pd.read_csv("datasets/170x25LargeGrid.csv")
-print(df)
+# df = pd.read_csv("datasets/170x25LargeGrid.csv")
+# print(df)
 
 def transformData(row, newDataList, activeEmitters, gridTable):
     """
@@ -88,18 +88,113 @@ def transformData(row, newDataList, activeEmitters, gridTable):
     
 
 
-#Main 
-joseData = []
-df500.apply(lambda row: transformData(row, joseData, activeEmitters, df), axis=1 )
-josedf = pd.DataFrame(data=joseData)
-print(josedf)
+# #Main 
+# joseData = []
+# df500.apply(lambda row: transformData(row, joseData, activeEmitters, df), axis=1 )
+# josedf = pd.DataFrame(data=joseData)
+# print(josedf)
 
-#change the order of the columns just to have same layout as Joses data
-josedf = josedf.iloc[:,[0,2,3,4,5,6,7,8,9,10,1]]
+# #change the order of the columns just to have same layout as Joses data
+# josedf = josedf.iloc[:,[0,2,3,4,5,6,7,8,9,10,1]]
 
-print(josedf)
+# print(josedf)
 
-josedf.to_csv("datasets/JoseData.csv", index=False)
+# josedf.to_csv("datasets/JoseData.csv", index=False)
 
-test = pd.read_csv("datasets/JoseData.csv")
-print(test)
+# test = pd.read_csv("datasets/JoseData.csv")
+# print(test)
+
+
+#make another one for jose with same block just with different data from a different day
+# df500_2 = pd.read_csv("datasets/block_500_11_16.csv")
+# df500_2 = df500_2.rename(columns={"Unnamed: 0": "class_label"})
+
+# grid_tuple_2 = gl.completeGrid(origin= origin,
+#                 latDistance= 170,
+#                 longDistance= 25,
+#                 adjustedMeridianDistance= 1,
+#                 adjustedParallelDistance= 1,
+#                 df500= df500_2)
+
+# activeEmitters = gl.getActiveEmitterLocs(emitter_locs=grid_tuple_2[1])
+
+# #make csv file for this grid
+# gl.exportGridAsCsv(grid=grid_tuple_2[0], pathName="datasets/170x25LargeGrid_11_16.csv", withIndex=False)
+
+# #read same file
+# df_2 = pd.read_csv("datasets/170x25LargeGrid_11_16.csv")
+
+# joseData = []
+# df500_2.apply(lambda row: transformData(row, joseData, activeEmitters, df_2), axis=1 )
+# josedf = pd.DataFrame(data=joseData)
+# print(josedf)
+
+# #change the order of the columns just to have same layout as Joses data
+# josedf = josedf.iloc[:,[0,2,3,4,5,6,7,8,9,10,1]]
+
+# print(josedf)
+
+# josedf.to_csv("datasets/JoseData_11_16.csv", index=False)
+
+# print("THIS IS THE NEW JOSE DATA")
+# test = pd.read_csv("datasets/JoseData_11_16.csv")
+# print(test)
+
+#turn this whole process into one function
+def fanchenToJoseData(inputFileName, outputFileName, gridFileName, gridOrigin):
+    """
+    inputFileName: The file path of the block data 
+    outputFileName: the output file path for the jose version of the data
+    gridOrigin: the origin of the grid that is used for the data in the
+    inputFileName construction
+
+    Returns: a csv file in the JoseData format
+
+    Description: This function takes in a csv file in the block500 format that
+    Phillip creates. We then perform some functions on this file to convert it 
+    to the format that Jose needs for his machine learing process. Currently,
+    we are static with the grid side and spacing. We can add parameters for
+    that stuff later...
+    """
+    #read the inputFileName as a df and rename index column
+    df = pd.read_csv(inputFileName)
+    df = df.rename(columns={"Unnamed: 0": "class_label"})
+
+    #create the grid structure that will use the data from the df
+    grid_tuple = gl.completeGrid(origin= gridOrigin,
+                latDistance= 170,
+                longDistance= 25,
+                adjustedMeridianDistance= 1,
+                adjustedParallelDistance= 1,
+                df500= df)
+    
+    activeEmitters = gl.getActiveEmitterLocs(emitter_locs=grid_tuple[1])
+
+    #make csv file for this grid
+    gl.exportGridAsCsv(grid=grid_tuple[0], pathName=gridFileName, withIndex=False)
+
+    #read same file
+    df_grid= pd.read_csv(gridFileName)
+
+    joseData = []
+    df.apply(lambda row: transformData(row, joseData, activeEmitters, df_grid), axis=1 )
+    josedf = pd.DataFrame(data=joseData)
+    print(josedf) #can remove this line
+
+    #change the order of the columns just to have same layout as Joses data
+    josedf = josedf.iloc[:,[0,2,3,4,5,6,7,8,9,10,1]]
+
+    print(josedf) #can remove this line
+
+    josedf.to_csv(outputFileName, index=False)
+
+    print("THIS IS THE NEW JOSE DATA")
+    test = pd.read_csv(outputFileName) #we can remove this line
+    print(test)
+
+
+#main - call this function
+fanchenToJoseData(inputFileName="datasets/block_500_11_16.csv",
+                    outputFileName="datasets/JoseData_11_16.csv",
+                    gridFileName="datasets/170x25LargeGrid_11_16.csv",
+                    gridOrigin=origin)

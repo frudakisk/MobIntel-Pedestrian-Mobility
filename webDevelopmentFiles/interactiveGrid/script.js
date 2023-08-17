@@ -45,7 +45,9 @@ function fetchData() {
   /*This function reads in a json form of the grid data that was
   prepared by phillip susman. This function also processes the data
   to be injected into each cell */
-  fetch('./grid_json.json')
+  
+  //fetch('./grid_json.json')
+  fetch('./170x25LargeGrid_json.json')
   .then(response => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -121,6 +123,20 @@ function createGridCell(row, column, location, corners, center, sensor_distances
     //Give cells that have a sensor in it a thin black border
     cellElement.style.border = "thin solid #000000";
   }
+  if (cell.avg_RSSI.indexOf("nan")) {
+    console.log("NAN DETECTED IN AVG RSSI");
+    console.log("SHOWING JSON SCORE IN CREATE GRID CELL")
+
+    cell.avg_RSSI = cell.avg_RSSI.replaceAll("nan", "-9999");
+
+
+  }
+
+  if (cell.score.indexOf("nan")) {
+    console.log("NAN DETECTED IN SCORE");
+
+    cell.score = cell.score.replaceAll("nan", "-9999");
+  }
   cellElement.addEventListener('click', () => showPopup(cell, cellElement));
   cellElement.cellinfo = cell;
   grid.appendChild(cellElement);
@@ -186,8 +202,12 @@ function resetCells() {
   for (let i = 0; i < cells.length; i++) {
     cells[i].style.backgroundColor = `rgba(255, 140, 0, 1)`;
     let score_JSON = cells[i].cellinfo.score;
+    console.log("TYPE IN RESETCELLS")
+    
     score_JSON = score_JSON.replace(/'/g, '"');
-    let score = JSON.parse(score_JSON);
+    let score = JSON.parse(score_JSON); //gotta do this to get actual data object and not string
+    console.log(typeof(score))
+    console.log(score)
     score = score[sensor_id];
     cells[i].cellinfo.sensor_score = score;
     if (score == -9999) {

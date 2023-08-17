@@ -1,0 +1,854 @@
+[
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(14, 53)",
+        "distance_error": "5.830951894845301",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 59)",
+        "distance_error": "6.082762530298219",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 52)",
+        "distance_error": "7.211102550927978",
+        "count": "28"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(14, 65)",
+        "distance_error": "7.615773105863909",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 51)",
+        "distance_error": "8.602325267042627",
+        "count": "10"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 66)",
+        "distance_error": "8.94427190999916",
+        "count": "25"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 51)",
+        "distance_error": "9.219544457292887",
+        "count": "6"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 50)",
+        "distance_error": "10.0",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 67)",
+        "distance_error": "10.295630140987",
+        "count": "6"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 49)",
+        "distance_error": "10.295630140987",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 50)",
+        "distance_error": "10.63014581273465",
+        "count": "253"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 67)",
+        "distance_error": "10.816653826391969",
+        "count": "7"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 49)",
+        "distance_error": "10.816653826391969",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 50)",
+        "distance_error": "11.313708498984761",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 49)",
+        "distance_error": "11.40175425099138",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 68)",
+        "distance_error": "11.661903789690601",
+        "count": "3"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 49)",
+        "distance_error": "12.041594578792296",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(8, 50)",
+        "distance_error": "12.041594578792296",
+        "count": "5"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 69)",
+        "distance_error": "12.083045973594572",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 48)",
+        "distance_error": "12.206555615733702",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 68)",
+        "distance_error": "12.206555615733702",
+        "count": "194"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 47)",
+        "distance_error": "12.529964086141668",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 68)",
+        "distance_error": "12.806248474865697",
+        "count": "3"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 70)",
+        "distance_error": "13.0",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 69)",
+        "distance_error": "13.038404810405298",
+        "count": "3"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(7, 49)",
+        "distance_error": "13.45362404707371",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 69)",
+        "distance_error": "13.601470508735444",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 46)",
+        "distance_error": "13.892443989449804",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(16, 72)",
+        "distance_error": "14.035668847618199",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 45)",
+        "distance_error": "14.317821063276353",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 71)",
+        "distance_error": "14.7648230602334",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 72)",
+        "distance_error": "14.866068747318506",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(6, 68)",
+        "distance_error": "14.866068747318506",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(8, 70)",
+        "distance_error": "15.0",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 73)",
+        "distance_error": "15.524174696260024",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 72)",
+        "distance_error": "15.652475842498529",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 73)",
+        "distance_error": "15.811388300841896",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 72)",
+        "distance_error": "16.1245154965971",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(6, 70)",
+        "distance_error": "16.278820596099706",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(14, 74)",
+        "distance_error": "16.278820596099706",
+        "count": "14"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(4, 68)",
+        "distance_error": "16.401219466856727",
+        "count": "3"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 73)",
+        "distance_error": "16.55294535724685",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 74)",
+        "distance_error": "17.08800749063506",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 42)",
+        "distance_error": "17.46424919657298",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 75)",
+        "distance_error": "17.72004514666935",
+        "count": "34"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 41)",
+        "distance_error": "17.72004514666935",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 75)",
+        "distance_error": "18.027756377319946",
+        "count": "3"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 75)",
+        "distance_error": "18.384776310850235",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(6, 73)",
+        "distance_error": "18.601075237738275",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 75)",
+        "distance_error": "18.788294228055936",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 40)",
+        "distance_error": "18.973665961010276",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 76)",
+        "distance_error": "18.973665961010276",
+        "count": "4"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 76)",
+        "distance_error": "19.313207915827967",
+        "count": "4"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 76)",
+        "distance_error": "19.697715603592208",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 77)",
+        "distance_error": "20.248456731316587",
+        "count": "6"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 77)",
+        "distance_error": "20.615528128088304",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 78)",
+        "distance_error": "21.540659228538015",
+        "count": "9"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(14, 36)",
+        "distance_error": "22.20360331117452",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 36)",
+        "distance_error": "22.360679774997898",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 36)",
+        "distance_error": "22.561028345356956",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 36)",
+        "distance_error": "22.80350850198276",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(8, 79)",
+        "distance_error": "22.847319317591726",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 36)",
+        "distance_error": "23.08679276123039",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(8, 80)",
+        "distance_error": "23.769728648009426",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 34)",
+        "distance_error": "24.515301344262525",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 34)",
+        "distance_error": "24.73863375370596",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(17, 33)",
+        "distance_error": "25.0",
+        "count": "6"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(15, 33)",
+        "distance_error": "25.079872407968907",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(14, 33)",
+        "distance_error": "25.179356624028344",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 33)",
+        "distance_error": "25.317977802344327",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 33)",
+        "distance_error": "25.495097567963924",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(14, 32)",
+        "distance_error": "26.1725046566048",
+        "count": "47"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 32)",
+        "distance_error": "26.30589287593181",
+        "count": "4"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(7, 83)",
+        "distance_error": "26.92582403567252",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 31)",
+        "distance_error": "27.294688127912362",
+        "count": "9"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(6, 33)",
+        "distance_error": "27.313000567495326",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 31)",
+        "distance_error": "27.459060435491963",
+        "count": "7"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(7, 84)",
+        "distance_error": "27.85677655436824",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 30)",
+        "distance_error": "28.442925306655784",
+        "count": "12"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 30)",
+        "distance_error": "28.635642126552707",
+        "count": "6"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(7, 85)",
+        "distance_error": "28.792360097775937",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(8, 86)",
+        "distance_error": "29.410882339705484",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 29)",
+        "distance_error": "29.614185789921695",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(7, 86)",
+        "distance_error": "29.732137494637012",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(8, 87)",
+        "distance_error": "30.364452901377952",
+        "count": "13"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(19, 27)",
+        "distance_error": "31.064449134018133",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(8, 88)",
+        "distance_error": "31.32091952673165",
+        "count": "4"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 89)",
+        "distance_error": "32.01562118716424",
+        "count": "6"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(5, 88)",
+        "distance_error": "32.31098884280702",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 26)",
+        "distance_error": "32.55764119219941",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(7, 89)",
+        "distance_error": "32.57299494980466",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 90)",
+        "distance_error": "32.7566787083184",
+        "count": "22"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(6, 89)",
+        "distance_error": "32.89376840679705",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 90)",
+        "distance_error": "32.984845004941285",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(8, 90)",
+        "distance_error": "33.24154027718932",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(7, 90)",
+        "distance_error": "33.52610922848042",
+        "count": "3"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(4, 89)",
+        "distance_error": "33.61547262794322",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 91)",
+        "distance_error": "33.734255586866",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(6, 90)",
+        "distance_error": "33.83784863137726",
+        "count": "10"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 91)",
+        "distance_error": "33.95585369269929",
+        "count": "6"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(5, 90)",
+        "distance_error": "34.17601498127012",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(8, 91)",
+        "distance_error": "34.20526275297414",
+        "count": "14"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 92)",
+        "distance_error": "34.23448553724738",
+        "count": "3"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 92)",
+        "distance_error": "34.36568055487916",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 92)",
+        "distance_error": "34.52535300326414",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(10, 92)",
+        "distance_error": "34.713109915419565",
+        "count": "10"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(16, 93)",
+        "distance_error": "35.014282800023196",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(11, 93)",
+        "distance_error": "35.510561809129406",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(22, 22)",
+        "distance_error": "36.345563690772494",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(14, 95)",
+        "distance_error": "37.12142238654117",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(12, 95)",
+        "distance_error": "37.33630940518894",
+        "count": "3"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(18, 20)",
+        "distance_error": "38.01315561749642",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 96)",
+        "distance_error": "38.2099463490856",
+        "count": "3"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(18, 19)",
+        "distance_error": "39.01281840626232",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 97)",
+        "distance_error": "39.20459156782532",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(16, 18)",
+        "distance_error": "40.01249804748511",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(18, 17)",
+        "distance_error": "41.012193308819754",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(18, 16)",
+        "distance_error": "42.01190307520001",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(15, 16)",
+        "distance_error": "42.04759208325728",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(14, 16)",
+        "distance_error": "42.1070065428546",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(17, 15)",
+        "distance_error": "43.0",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(16, 15)",
+        "distance_error": "43.01162633521314",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(15, 15)",
+        "distance_error": "43.04648650006177",
+        "count": "4"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(14, 15)",
+        "distance_error": "43.104524124504614",
+        "count": "9"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 15)",
+        "distance_error": "43.18564576337837",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(17, 14)",
+        "distance_error": "44.0",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(16, 14)",
+        "distance_error": "44.01136216933077",
+        "count": "9"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(18, 14)",
+        "distance_error": "44.01136216933077",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(15, 14)",
+        "distance_error": "44.04543109109048",
+        "count": "5"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(19, 14)",
+        "distance_error": "44.04543109109048",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(14, 14)",
+        "distance_error": "44.10215414239989",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 103)",
+        "distance_error": "45.17742799230607",
+        "count": "3"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(17, 12)",
+        "distance_error": "46.0",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(16, 12)",
+        "distance_error": "46.010868281309364",
+        "count": "3"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(15, 12)",
+        "distance_error": "46.04345773288535",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(3, 102)",
+        "distance_error": "46.17358552246078",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(14, 11)",
+        "distance_error": "47.095647357266465",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(13, 10)",
+        "distance_error": "48.16637831516918",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(9, 108)",
+        "distance_error": "50.635955604688654",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(7, 109)",
+        "distance_error": "51.97114584074513",
+        "count": "2"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(15, 111)",
+        "distance_error": "53.03772242470448",
+        "count": "1"
+    },
+    {
+        "tx_coord": "(17, 58)",
+        "best_tile_localization": "(14, 138)",
+        "distance_error": "80.05623023850174",
+        "count": "1"
+    }
+]
