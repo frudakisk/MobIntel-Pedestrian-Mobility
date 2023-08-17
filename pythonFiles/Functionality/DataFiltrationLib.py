@@ -170,3 +170,66 @@ def getSubsetByRefSensorAndX(refSensor, x):
     df = pd.read_csv(df500)
     newDf = df.query("ref_sensor == @refSensor & x == @x").copy()
     return newDf
+
+def convertFanchen():
+    # block reads and organizes fanchen's dataset, renames sensor ids to actual
+
+    fanchen_data = pd.read_csv("datasets/RSSI_localization_data_WPB/2022_11_17.csv")
+    # drops unnecessary columns, converts datatypes to smaller format, renames column
+    fanchen_data = fanchen_data.drop(columns=["label"])
+    fanchen_data = fanchen_data.astype("float32")
+    fanchen_data = fanchen_data.astype({"emitter":"int16","lamp_post":"int16"})
+    fanchen_data = fanchen_data.rename(columns={"lamp_post": "ref_sensor"})
+    fanchen_data = fanchen_data.loc[(fanchen_data['x'] != 20) & (fanchen_data['x'] != 24)]
+
+    # separates raw data into different dataframes based on their location
+    north_west = fanchen_data[(fanchen_data["class"] == 1) & (fanchen_data["city_block"] == 500)]
+    south_west = fanchen_data[(fanchen_data["class"] == 0) & (fanchen_data["city_block"] == 500)]
+    north_east = fanchen_data[(fanchen_data["class"] == 1) & (fanchen_data["city_block"] == 400)]
+    south_east = fanchen_data[(fanchen_data["class"] == 0) & (fanchen_data["city_block"] == 400)]
+
+    # renames all the ref sensors from unhelpful 1-6 to their actual ID
+    north_west["ref_sensor"].loc[north_west["ref_sensor"] == 0] = 57
+    north_west["ref_sensor"].loc[north_west["ref_sensor"] == 1] = 20
+    north_west["ref_sensor"].loc[north_west["ref_sensor"] == 2] = 4
+    north_west["ref_sensor"].loc[north_west["ref_sensor"] == 3] = 54
+    north_west["ref_sensor"].loc[north_west["ref_sensor"] == 4] = 5
+    north_west["ref_sensor"].loc[north_west["ref_sensor"] == 5] = 40
+    north_west["ref_sensor"].loc[north_west["ref_sensor"] == 6] = 34
+
+    south_west["ref_sensor"].loc[south_west["ref_sensor"] == 0] = 22
+    south_west["ref_sensor"].loc[south_west["ref_sensor"] == 1] = 6
+    south_west["ref_sensor"].loc[south_west["ref_sensor"] == 2] = 42
+    south_west["ref_sensor"].loc[south_west["ref_sensor"] == 3] = 31
+    south_west["ref_sensor"].loc[south_west["ref_sensor"] == 4] = 33
+    south_west["ref_sensor"].loc[south_west["ref_sensor"] == 5] = 36
+    south_west["ref_sensor"].loc[south_west["ref_sensor"] == 6] = 35
+
+    north_east["ref_sensor"].loc[north_east["ref_sensor"] == 0] = 11
+    north_east["ref_sensor"].loc[north_east["ref_sensor"] == 1] = 28
+    north_east["ref_sensor"].loc[north_east["ref_sensor"] == 2] = 7
+    north_east["ref_sensor"].loc[north_east["ref_sensor"] == 3] = 50
+    north_east["ref_sensor"].loc[north_east["ref_sensor"] == 4] = 8
+    north_east["ref_sensor"].loc[north_east["ref_sensor"] == 5] = 21
+
+    south_east["ref_sensor"].loc[south_east["ref_sensor"] == 0] = 39
+    south_east["ref_sensor"].loc[south_east["ref_sensor"] == 1] = 38
+    south_east["ref_sensor"].loc[south_east["ref_sensor"] == 2] = 56
+    south_east["ref_sensor"].loc[south_east["ref_sensor"] == 3] = 55
+    south_east["ref_sensor"].loc[south_east["ref_sensor"] == 4] = 53
+    south_east["ref_sensor"].loc[south_east["ref_sensor"] == 5] = 27
+    south_east["ref_sensor"].loc[south_east["ref_sensor"] == 6] = 25
+
+    # gets all info from block 500, keeps only sensors in that block, drops empty columns
+    block_500_sensors = ['s57', 's20', 's04', 's54', 's05', 's40', 's34', 's22', 's06', 's42', 's31', 's33', 's36', 's35']
+    block_500 = pd.merge(south_west, north_west, how='outer').drop(columns=['city_block', 'class'])
+    block_500 = block_500[['x','ref_sensor','s57', 's20', 's04', 's54', 's05', 's40', 's34', 's22', 's06', 's42', 's31', 's33', 's36', 's35']]
+    block_500 = block_500.dropna(how="all", axis=1)
+
+    # gets all info from block 400, keeps only sensors in that block, drops empty columns
+    block_400_sensors = ['s11', 's28', 's07', 's50', 's08', 's21', 's39', 's38', 's56', 's55', 's53', 's27', 's25']
+    block_400 = pd.merge(south_east, north_east, how='outer').drop(columns=['city_block', 'class'])
+    block_400 = block_400[['x','ref_sensor','s11', 's28', 's07', 's50', 's08', 's21', 's39', 's38', 's56', 's55', 's53', 's27', 's25']]
+    block_400 = block_400.dropna(how="all", axis=1)
+
+    return block_500, block_400
