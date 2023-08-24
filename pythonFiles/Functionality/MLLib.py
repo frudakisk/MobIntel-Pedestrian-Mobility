@@ -8,14 +8,20 @@ rssiDataSet = pd.read_csv("datasets/sampled_source_data.csv")
 def lambdaRound(row):
     """
     row: a row in the 
-    round all the distances to the closest whole number
+    Returns:
+    Description: round all the distances to the closest whole number
     """
     return round(row["Distance"])
 
 
 def sensorDistance(sensorId):
     """
-    Create a sub dataframe that contains the sensor rssi value (e.i., s1) and the distance from that sensor (s1_d)
+    sensorId: string value that represents sensor number
+    Returns: a dataframe  holding sensor distance data. Each row tells us
+    how far away the rssi value was collected from
+    Description: Using the data from the parking lot experiement,
+    creates a sub dataframe that contains the sensor rssi value (e.i., s1) 
+    and the distance from that sensor (s1_d)
     returned dataframe is in the form: rssi | distance
     """
     sensorDict = {sensorId: rssiDataSet[sensorId]}
@@ -26,9 +32,12 @@ def sensorDistance(sensorId):
 
 def createSubSet(x, y):
     """
-    creates a subset based on the x & y coordinates on the rssiDataSet data frame
-    I created this function incase we need to separate by coordinates for whatever reason
-    I had a good reason before I made this function, but now I forgot
+    x: x coordinate column in parking lot experiment
+    y: y coordinate column in parking lot experiement
+    Returns: a subset of a data frame that resulted from a query on x and y
+    Description: creates a subset based on the x & y coordinates on the rssiDataSet 
+    data frame This function is created incase we need to separate by coordinates
+    for whatever reason I had a good reason before I made this function, but now I forgot
     """
     return rssiDataSet.query("xcoord == @x & ycoord == @y")
 
@@ -36,7 +45,11 @@ def createSubSet(x, y):
 
 def createDataFrame(sensorId, sensorDF):
     """
-    Create a dataframe with the column names of SensorId | RSSI Value | Distance
+    sensorId: id number of a sensor
+    sensorDF: result from sensorDistance(sensorid)
+    Returns: a dataframe of data from this certain sensorid
+    Description: Create a dataframe with the column names
+    of SensorId | RSSI Value | Distance
     """
     sList = []
     for i in range(len(sensorDF)):
@@ -44,13 +57,16 @@ def createDataFrame(sensorId, sensorDF):
     data = {}
     data["sensor_Id"] = sList
     data["RSSI_Value"] = sensorDF[sensorId]
-    data["Distance"] = sensorDF[sensorId+"_d"] #I think i freaked up here
+    data["Distance"] = sensorDF[sensorId+"_d"]
     return pd.DataFrame(data=data)
 
 
 def scaleDataset(dataframe):
     """
-    scale the dataset to help with machine learning
+    dataframe: a data frame 
+    Returns: data in its entirety and data split up by the x and y value. Both are
+    subsets of data but adding them together equal data
+    Description: scale the dataset to help with machine learning
     """
     x = dataframe[dataframe.columns[1:-1]].values
     y = dataframe[dataframe.columns[-1]].values
@@ -59,8 +75,10 @@ def scaleDataset(dataframe):
 
 def KNN():
     """
-    This function uses the machine learning model called K-nearest neighbors
-    on the parking lot experiment performed by fanched and stepan
+    Returns: a plot that represents  the KNN algorithm success
+    Description: This function uses the machine learning model called 
+    K-nearest neighbors on the parking lot experiment performed by 
+    fanched and stepan
     """
 
     s1 = sensorDistance("s1")
