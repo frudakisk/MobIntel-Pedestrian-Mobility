@@ -5,7 +5,7 @@ import random
 
 sys.path.append("pythonFiles")
 
-from Functionality import GridLib as gl
+from Functionality import GridLib as gl, Constants as c
 
 df500 = pd.read_csv("datasets/block_500_only.csv", engine='python')
 df500 = df500.drop(columns=("Unnamed: 0"))
@@ -102,5 +102,14 @@ csvFile = "datasets/GridLibDriverGridWithLocalization.csv"
 jsonPath = "webDevelopmentFiles/interactiveGrid/grid_json.json"
 gl.csvTojson(csvFile, jsonPath)
 
+#showing how multipleGrids works
+#origin, latDist, longDist, meridian, parallel
+grid0 = [c.GRID_BLOCK_500_ORIGIN, 170, 25, 1, 1]
+grid1 = [c.GRID_BLOCK_400_ORIGIN, 140, 25, 1, 1]
+grid2 = [c.GRID_BLOCK_300_ORIGIN, 162, 25, 1, 1]
+grid3 = [c.GRID_BLOCK_200_ORIGIN, 115, 25, 1, 1]
+listOfGrids = [grid0, grid1, grid2, grid3]
 
+m = gl.multipleGrids(listOfGrids=listOfGrids, parentOrigin=c.GRID_BLOCK_400_ORIGIN)
+gl.showGrid(m=m, filePath='media/maps/concatMap.html')
 

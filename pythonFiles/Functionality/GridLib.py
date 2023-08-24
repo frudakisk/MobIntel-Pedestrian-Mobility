@@ -11,6 +11,26 @@ from Functionality import DataFiltrationLib as dfl
 
 # This is the class for a grid square
 class GridSquare:
+  """
+  location: a coordinate value that represents grid tile location in the grid
+  corners: the (lat, long) values for the corder of each grid tile
+  center: center latitude and longitude for the grid square
+  sensor_distance: distances between the center of the tile and each sensor in the grid
+  calculated_RSSI: using a pathloss model, represents "ideal" rssi value
+  avg_RSSI: a calculated average value use when we know the location of emitters. Only 
+  meaningful when the tile contains the location of a known emitter locations
+  mode_RSSI: a calculated mode value use when we know the location of emitters. Only 
+  meaningful when the tile contains the location of a known emitter locations
+  best_RSSI: a calculated best value use when we know the location of emitters. Only 
+  meaningful when the tile contains the location of a known emitter locations
+  is_emitter: a boolean value. True if emitter is in this tile, False if not. Only
+  meaningful when we know the locations of emitting devices.
+  score: mathematical result dealing with the difference between calculated_RSSI and
+  actual rssi values. Only meaningful for tiles with is_emitter = True
+  hasSensor: True if the tile has a sensor within its boundries, False otherwise
+  localizationGuesses: a dictionary that contains localization guesses based on 
+  known emitter locations and data from those emitters.
+  """
   def __init__(self, location, corners, center, sensor_distances, calculated_RSSI, avg_RSSI,
                mode_RSSI, best_RSSI, is_emitter, score, hasSensor, localizationGuesses): #changed actual_RSSI to avg_RSSI
     # contains all necessary variables for a grid square
@@ -29,34 +49,42 @@ class GridSquare:
 
 
 def adjustedLongitude(t, x):
-  """t is the tuple of (lat,long) of reference location.
-  x is the distance, in meters, from the reference point.
-  If x is positive, this distance is eastward.
+  """
+  t: the tuple of (lat,long) of reference location.
+  x: is the distance, in meters, from the reference point.
+  Returns: a new (lat,long) that is adjusted by x meters
+  Description: If x is positive, this distance is eastward.
   If x is negative, this distance is westward.
-  Returns a new (lat,long) that is adjusted by x meters"""
+  
+  """
   rEarth = 6371000.0
   newLongitude = t[1] + (x / rEarth) * (180/pi) / cos(t[0] * pi/180)
   return (t[0], newLongitude)
 
 def adjustedLatitude(t, y):
-  """t is the tuple of (lat,long) of reference location.
-  y is the distance, in meters, from the reference point.
-  If y is positive, this distance is northward.
+  """
+  t: the tuple of (lat,long) of reference location.
+  y: is the distance, in meters, from the reference point.
+  Returns: a new (lat,long) that is adjusted by y meters
+  Description: If y is positive, this distance is northward.
   If y is negative, this distance is southward.
-  Returns a new (lat,long) that is adjusted by y meters"""
+  
+  """
   rEarth = 6371000.0
   newLatitude  = t[0]  + (y / rEarth) * (180 / pi)
   return (newLatitude, t[1])
 
 
 def visualizeGrid(origin, lat_dist, long_dist, meridianDist, parallelDist):
-  """This function will plot the grid onto a folium map
+  """
   Origin: southwest point of grid
   lat_dist: how far, in meters, the grid will expand east
   long_dist: how far, in meters, the grid will expand north
   meridianDist: how many steps, in meters, are between captured meridian lines
   parallelDistL how many steps, in meters, are between captured parallel lines
   Returns: a folium map object
+  Description: This function will plot the grid onto a folium map and return the
+  object. It is up to another function to save the file in html format
   """
   latList, longList = createGrid(origin, lat_dist, long_dist, meridianDist, parallelDist)
   latList = latList[:-1]
@@ -87,7 +115,8 @@ def showGrid(m, filePath):
   """
   m: the folium Map object
   filePath: The path to which you want to save your html map
-  This function will create a visual rendering of the given map object
+  Returns: a new file with specified filePath. must be an html file.
+  Description: This function will create a visual rendering of the given map object
   """
   m.save(filePath)
   webbrowser.open(filePath, new=2)
@@ -136,17 +165,21 @@ def multipleGrids(listOfGrids, parentOrigin):
 
 
 def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance):
-  """This function will return two lists - latList and longList.
+  """
+  Origin: southwest point of grid as a tuple
+  latDistance: how far, in meters, the grid will expand east
+  longDistance: how far, in meters, the grid will expand north
+  adjustedMeridianDistance: how many steps, in meters, are between captured meridian lines
+  adjustedParallelDistance: how many steps, in meters, are between captured parallel lines
+  Returns: the latList and longList that define the boundaries and tiles of the grid
+  Description:
+  This function will return two lists - latList and longList.
   These list will contain the parallels(latitude) and meridians(longitude) that
   are involved in this graph that are separated by the corresponding adjusted distances.
-  origin: a tuple of (latitude, longtitude) coordinates
-  latDistance: How long the latitudinal lines of the grid should stretch
-  longDistance: How long the longitudinal liens of the grid should stretch
-  adjustedMeridianDistance: How many meters should be between each selected meridian line
-  adjustedParallelDistance: How many meters should be between each selected parallel line
   This function requires an origin point as a tuple,
   the distance(meters) of how far up in longitude from the origin as a positive integer,
-  and the distance of how far right in latitude we stray from the origin as a positive integer"""
+  and the distance of how far right in latitude we stray from the origin as a positive integer
+  """
   #latDistance = latDistance - 1
   #longDistance = longDistance - 1
   longList = list()
@@ -183,6 +216,12 @@ def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adju
 
 # This function makes a 2D array of all possible lat/long combinations
 def makeCoordsArray(latList, longList):
+  """
+  latList: latList from createGrid
+  longList: longList from createGrid
+  Returns: a 2D array of coordinates
+  Description: This function makes a 2D array of all possible lat/long combinations
+  """
   all_coords = np.zeros((len(latList),len(longList)), dtype=tuple)
   for i in range(len(latList)):
     for j in range(len(longList)):
@@ -190,11 +229,14 @@ def makeCoordsArray(latList, longList):
   return all_coords
 
 
-# This function creates the grid
-# Using the coords 2D array, it goes to every index and stores the 4 coords in
-# each grid square
-# It also can handle reaching the end of the grid
 def getGridCorners(coord_array):
+  """
+  coord_array: the return value from makeCoordsArray(latList, longList)
+  Returns: an array of all grid corners
+  Description: This function created the grid. Using the coords 2D array, it goes
+  to every index and stores the 4 coords in each grid square. It also can handle
+  reaching the end of the grid.
+  """
   # makes a new array with the same shape as the coord array
   grid_array = np.zeros(coord_array.shape, dtype=tuple)
   print("What is the shape of grid_array\n", coord_array.shape) #should be 5,25
@@ -218,8 +260,14 @@ def getGridCorners(coord_array):
   return grid_array
 
 
-# This function gets the coordinates of all emitter locations in given dataframe
 def getEmitterCoords(df):
+  """
+  df: a dataframe object that has known emitter locations
+  Returns: a dictionary that contains the emitter location and its geographical
+  coordinate values
+  Description: The function gets the coordinates of all emitter locations in
+  the given data frame.
+  """
   ref = df['ref_sensor'].unique() # gets array of all ref_sensors
   x = df['x'].unique() # gets 2D array of all X values
   x = x[:5] # gets rid of x = 20, since there are barely any and it only complicates things
@@ -234,6 +282,14 @@ def getEmitterCoords(df):
 
 # This function gets the position of emitters within the grid
 def getEmitterPositions(emitter_coords, latList, longList, grid_corners):
+  """
+  emitter_coords: return value from getEmitterCoords(df)
+  latList: return value from createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance)
+  longList: return value from createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance)
+  grid_corners: return value from getGridCorners(coords_array)
+  Returns: a dictionary that tells us the tile location of each emitter
+  Description: This function gets the positions of emitters within the grid
+  """
   emitter_position = {}
   latList = latList[:-1]
   longList = longList[:-1]
@@ -257,6 +313,19 @@ def getEmitterPositions(emitter_coords, latList, longList, grid_corners):
 # the device is in
 # If it is not in bounds, it returns -1
 def getDeviceGridSpot(device_loc, latList, longList, grid_corners):
+  """
+  device_loc: return values from getEmitterCoords(df)
+  latList: return value from createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance)
+  longList: return value from createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance)
+  grid_corners: return value from getGridCorners(coords_array)
+  Returns: a tuple of 4 coords representing the 4 corners of the grid square the
+  device is in, -1 if the device is not within the grid.
+  Description: This is a helper function for getEmitterPositions(). This function
+  checks if the given device is within the bounds of the grid. If it is, it compares
+  coordinates with the lat.long lists until the lat/long coords are larger. It
+  returns a tuple of 4 coords representing he 4 corners of the grid square the
+  device is in. If it is not in bounds, it returns -1
+  """
   lat_index = 0
   latList = latList[:-1]
   longList = longList[:-1]
@@ -298,7 +367,19 @@ def getDeviceGridSpot(device_loc, latList, longList, grid_corners):
 
 def makeGrid(grid_corners, latList, longList, emitter_locs, df):
   """
-  the df should be df500 right now since that is what we have been working with so far
+  grid_corners: return value from getGridCorners(coords_array)
+  latList: return value from createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance)
+  longList: return value from createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance)
+  emitter_locs: return value from getEmitterPositions(emitter_coords, latList, longList, grid_corners)
+  df: a blockData csv file that has known emitter locations
+  Returns: a grid object that uses the gridSquare class
+  Description: This function uses a bunch of information from different functions to
+  create a grid object. This object holds all the gridSquares we made and we can
+  call all of them by location, hasSensor, etc. This is basically our core
+  value when we try to localize emitter locations because we do so within the boundaires
+  of this grid.
+  the df should be of blockData right now since that is what we have been working with so far
+  when we know the locations of emitting devices, like in Fanchens dataset.
   """
   RSSI_sensor_list = ('57', '20', '05', '34', '22', '06', '31', '36', '35') #no RSSI values, excluded 04, 54, 40, 42, 33 from original list
   ref_sensor_list = ('57', '20', '54', '40', '34', '22', '42', '31', '33', '36', '35') #missing ref sensors
@@ -388,6 +469,15 @@ def makeGrid(grid_corners, latList, longList, emitter_locs, df):
 
 
 def exportGridAsCsv(grid, pathName, withIndex):
+  """
+  grid: return value from makeGrid()
+  pathName: the desired path name to save the returned csv file
+  withIndex: set to True if you want the csv file to have an index column. False
+  if otherwise.
+  Returns: a csv file form of the grid object
+  Description: This function flattens a grid into rows and columns so that we 
+  can turn it into a csv file and work with the data of the grid
+  """
   yea = grid.flatten()
   grid_df = pd.DataFrame.from_records(vars(o) for o in yea)
   grid_df.to_csv(pathName, index=withIndex)
@@ -396,7 +486,9 @@ def exportGridAsCsv(grid, pathName, withIndex):
 def sensorLocationsDict(sensorList):
   """
   sensorList: string list that indicates sensor numbers
-  This function takes in a list of sensor numbers and returns a dictionary
+  Returns: a dictionary that contains the sensor number as the key and the (lat, long)
+  of the sensor as the value, which is the physical location of a sensor
+  Description: This function takes in a list of sensor numbers and returns a dictionary
   that contains the sensor number as the key and the (lat,long) of the sensor as the value
   """
   sensorLocations = {}
@@ -412,8 +504,8 @@ def sensorMaxCoords(sensorList, latList, longList):
   sensorList: string list that indicates sensor numbers
   latList: list of parallels that make up the current grid
   longList: list of meridians that make up the current grid
-  This function will return the maximum latitude and longitude that a sensor is less than, according to grid restrictions.
-  This means, when we reach the first latitude that is larger than the latitude of the sensor, we
+  Returns: This function will return the maximum latitude and longitude that a sensor is less than, according to grid restrictions.
+  Description: when we reach the first latitude that is larger than the latitude of the sensor, we
   collect this latitude and store it as the max latitude. This helps us determine what tile we are in
   within our grid."""
   maxCoordsDict = {}
@@ -438,9 +530,10 @@ def containsSensor(tile, sensorList, latList, longList):
   sensorList: list of strings that indicate sensor numbers
   latList: list of parallels that make up the current grid
   longList: list of meridians that make up the current grid
-  In this function, we check if any of the sensors in the sensor list are within
-  the given tile Cell. Will return a dictionary with key as sensor and value
-  as a boolean that indicates if the sensor is within the tiles border
+  Returns: a dictionary with key as sensor and value as a boolean that indicates
+  if the sensor is within the tiles border
+  Description: In this function, we check if any of the sensors in the sensor list are within
+  the given tile Cell. 
   """
 
   tileDict = {}
@@ -454,6 +547,13 @@ def containsSensor(tile, sensorList, latList, longList):
 
 
 def averageActualRSSI(emitter_locs, df, ref_sensor_list):
+  """
+  emitter_locs: return value from getEmitterPositions(emitter_coords, latList, longList, grid_corners)
+  df: a blockData csv file that has known emitter locations
+  ref_sensor_list: a list of reference sensors
+  Returns: a dictionary of average rssi values for emitters
+  Description: finds the average rssi value for each sensor/emitter pair. 
+  """
   RSSI = {}
   for i in ref_sensor_list:
     x = 0.0 #Kyle: turned this to int instead of float bc was getting keyError
@@ -474,8 +574,9 @@ def completeGrid(origin, latDistance, longDistance, adjustedMeridianDistance, ad
   longDistance: how far we want the longitidue lines to go (vertical lines)
   adjustedMeridianDistance: the space between meridian lines
   adjustedParallelDistance: the space between parallel lines
-  df500: should be the df500 file
-  The result of this function will return all created objects that are constructed while creating a grid.
+  df500: should be a blockData csv file
+  Returns: a grid object
+  Description: The result of this function will return all created objects that are constructed while creating a grid.
   This information will be in the form of a tuple as (grid, emitter_locs, emitter_coords, grid_corners, coords_array, latList, longList)
   calling an index from this tuple will give you the information you want went you create a grid.
   There were a lot of functions that go into creating a grid, so it was a lot easier to put them all into one
@@ -610,6 +711,10 @@ def gridLocalization(grid, df, emitter_locs):
   Returns: A list containing tuples of information. These tuples will contain
   two bits of information. tup[0] will contain the emitterLoc. tup[1] will contain
   the dictionary of localization guesses for that emitterLoc.
+  Description: This is our attempt at trying to localize an emitter location. In
+  this case, we have known emitter locations. When we use data to try to find the
+  actual location of the emitteer, we can find a distance error between the
+  localized point and the actual location of the emitter.
   """
   #Instead of passing just one emitter_loc, I want to pass in 
   #a list of activeEmitters and just go through each of them
@@ -698,9 +803,10 @@ def gridLocalization(grid, df, emitter_locs):
 def generateLocalizationGuesses(row, grid, numberOfGuesses, data):
   """
   row: current row in joseData that has real rssi values
-  grid: dataframe of the 170x25 grid the row initially comes from
+  grid. dataframe version of a grid object that the row initally comes from
   numberOfGuesses: the amount of localization guesses we want to return. 1 is the best
-  data: a list that will take dictionaries in preparation for a dataframe data
+  data: a list that will take dictionaries in preparation for a dataframe data.
+  Should be empty when first inserting it into this function
 
   Returns: Does not return anything explicitly, but does add information to data, which
   should be a list variable outside of the function call
@@ -755,7 +861,10 @@ def csvTojson(csvFilePath, jsonPath, removeIndex=False):
   """
   csvFilePath: The path that the current csv file is located
   jsonPath: the path where you want the new json file to be located
-  Converts a csv file to a json file 
+  removeIndex: If the csv file has an extra index column, we can remove it by
+  setting this parameter to True so our JSON file does not have an index key:value pair
+  Returns: a JSON file at the jsonPath location
+  Description: Converts a csv file to a json file 
   """
   data = []
 
@@ -785,12 +894,13 @@ def localizecsv(csvFilePath, csvOutputFilePath, localizationData):
   csvFilePath: original csv file we plan to manipulate. Should be the csv file
   for the grid
   csvOutputFilePath: name of new version of csvFilePath
-  newColumnName: name of new column to be added at the end of the rows
   localizationData: this parameter is a list object. The items in this list are
   lists that contain two types, at [0] a tuple the represents a location on a grid
   and at [1] a dictionary that represents the localization guesses for that grid spot
 
-  This function will add in data to the localizationGuesses column of each appropriate row.
+  Returns: a csv file of a grid object but with data in the localizationGuesses column
+
+  Description: This function will add in data to the localizationGuesses column of each appropriate row.
   We read through a clean csv file, the the rows with the same positions as those in 
   localizationData, and then input the data to the localizationGuesses column of that row.
   A new csv file is generated with this new information so that we preserve the unaltered version
@@ -817,8 +927,10 @@ def localizecsv(csvFilePath, csvOutputFilePath, localizationData):
 
 def getActiveEmitterLocs(emitter_locs):
   """
-  emitter_locs: a dictionary that contains a bunch of emitter locations
-  emitter_locs contains emitters that are not always active in the current grid.
+  emitter_locs: a dictionary that contains a bunch of emitter locations that is already
+  relevant to a pre-existing grid.
+  Returns: a dictionary that contains emitters currently active within a grid
+  Description: emitter_locs contains emitters that are not always active in the current grid.
   So this function returns the emitter locations that are currently in the grid.
   This function does not need the grid dimensions, because that is taken care of
   in the getEmitterPositions and getEmitterCoordinates function where we are given all emitter positions
