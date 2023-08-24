@@ -55,7 +55,6 @@ def adjustedLongitude(t, x):
   Returns: a new (lat,long) that is adjusted by x meters
   Description: If x is positive, this distance is eastward.
   If x is negative, this distance is westward.
-  
   """
   rEarth = 6371000.0
   newLongitude = t[1] + (x / rEarth) * (180/pi) / cos(t[0] * pi/180)
@@ -68,7 +67,6 @@ def adjustedLatitude(t, y):
   Returns: a new (lat,long) that is adjusted by y meters
   Description: If y is positive, this distance is northward.
   If y is negative, this distance is southward.
-  
   """
   rEarth = 6371000.0
   newLatitude  = t[0]  + (y / rEarth) * (180 / pi)

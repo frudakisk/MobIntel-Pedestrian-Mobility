@@ -10,7 +10,7 @@ This is where we will compile all out code that went towards this project. This 
 2. Libraries
 3. Drivers
 4. How to Use Libraries
-5. other stuff
+5. Commenting Convention
 
 ---
 
@@ -99,7 +99,7 @@ that were used to plot points on a map to visualize how successful we were trila
 * jprint()
 * createTrilateratedMap(df, headCount, centralPoint, pathName, d=None, createCsv=False, oldVersion=False)
 
-#### mLLib
+#### MLLib
 This library was created to hold all the functions that were used in developing
 a machine learning model. The ourpose of this was to see if k-nearest neighbors 
 algorithm was helpful in picking the correct rssi value based on a give distance.
@@ -185,4 +185,34 @@ import sys
 sys.path.append("pythonFiles")
 
 import Functionality.GridLib as gl
+```
+
+### Commenting Convention
+All of our functions in each library will have a comment section at the beginning. This comment is meant to help developers understand what the parameter are for the function, what to expect in return, and lightly describe what is going on in the function, or explain the purpose of the function. To standardize these comments, we try our best to follow the following convention:
+
+
+"""
+
+paramemter(1-n): explain what the parameter is and the object type
+Returns: explain what we should expect after running this function
+Description: lightl explain what the function does and why we have it
+
+"""
+
+We have as many parameter comments as there are in the signature of the function. For example, we write comments like this:
+
+```
+def adjustedLongitude(t, x):
+  """
+  t: the tuple of (lat,long) of reference location.
+  x: is the distance, in meters, from the reference point.
+  Returns: a new (lat,long) that is adjusted by x meters
+  Description: If x is positive, this distance is eastward.
+  If x is negative, this distance is westward. We return new 
+  coordinates based on the current location + the value of x,
+  which is a distance in meters.
+  """
+  .
+  .
+  .
 ```
