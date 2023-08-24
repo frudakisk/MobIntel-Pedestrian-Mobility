@@ -26,7 +26,7 @@ def sensor_trim(probe):
     new dataframe without isphysical == 1
     """
     probe_sorted = probe.loc[probe["isphysical"] != 1] # drop all physical MAC addresses
-    probe_filtered = probe_sorted.drop(columns =["isphysical"]).reset_index() # drop irrelevant columns
+    probe_filtered = probe_sorted.drop(columns =["isphysical"]).reset_index(drop=True) # drop irrelevant columns
     return probe_filtered
 
 

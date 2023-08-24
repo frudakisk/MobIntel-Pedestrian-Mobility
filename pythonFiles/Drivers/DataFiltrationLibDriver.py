@@ -22,10 +22,12 @@ print(df)
 
 df = dfl.determineMacHashDuration(filename)
 print(df)
+df.to_csv("datasets/machashDuration.csv")
 
-subset = dfl.getSubsetByRefSensorAndX(refSensor=22, x=0)
-print("showing the subset of data taken from df500")
-print(subset)
+# subset = dfl.getSubsetByRefSensorAndX(refSensor=22, x=0)
+# print("showing the subset of data taken from df500")
+# print(subset)
 
-df500, df400 = dfl.convertFanchen()
-print(df500)
+
+# df500, df400 = dfl.convertFanchen()
+# print(df500)

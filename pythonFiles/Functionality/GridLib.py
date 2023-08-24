@@ -92,6 +92,48 @@ def showGrid(m, filePath):
   m.save(filePath)
   webbrowser.open(filePath, new=2)
 
+def multipleGrids(listOfGrids, parentOrigin):
+  """
+  listOfGrids:  a list of lists where each list contains the raw parameters needed 
+  to make a grid. The order is as follows:
+                grid[0] = origin
+                grid[1] = lat_dist
+                grid[2] = long_dist
+                grid[3] = meridianDist
+                grid[4] = parallelDist
+  parentOrigin: The focal point of the overall map
+  Returns: a folium.Map object
+  Description: Displays multiple grid visuals into one map so we can see how all our grids look
+  like in one place
+  """
+  m = folium.Map(location=parentOrigin, width=2000, height=900, zoom_start=19, max_zoom=21)
+  for grid in listOfGrids:
+    latList, longList = createGrid(grid[0], grid[1], grid[2], grid[3], grid[4])
+    #latList, longList = createGrid(origin, lat_dist, long_dist, meridianDist, parallelDist)
+    latList = latList[:-1]
+    longList = longList[:-1]
+    parimeter = [grid[0],
+                (grid[0][0], longList[-1]),
+                (latList[-1], longList[-1]),
+                (latList[-1], grid[0][1]),
+                grid[0]]
+    folium.PolyLine(locations=parimeter).add_to(m)
+    loc = grid[0]
+    for i in range(int(grid[1]/grid[3])): #how many times I want to create a parallel line
+      loc = adjustedLongitude(t=loc, x=grid[3])
+      up = adjustedLatitude(t=loc, y=grid[2])
+      locationList=[loc, up]
+      folium.PolyLine(locations=locationList).add_to(m) #create the lines along meridian (up and down lines)
+    loc = grid[0]
+    for i in range(int(grid[2]/grid[4])):
+      loc = adjustedLatitude(t=loc, y=grid[4])
+      right = adjustedLongitude(t=loc, x=grid[1])
+      locationList=[loc, right]
+      folium.PolyLine(locations=locationList).add_to(m) #create the lines along the parallel (left to right lines)
+  return m
+
+
+
 
 def createGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance):
   """This function will return two lists - latList and longList.
@@ -444,7 +486,7 @@ def completeGrid(origin, latDistance, longDistance, adjustedMeridianDistance, ad
                                   adjustedParallelDistance=adjustedParallelDistance)
   coords_array = makeCoordsArray(latList, longList) # makes 2D array with all lat/long
   grid_corners = getGridCorners(coords_array) # stores the corner coordinates of all grid squares
-  emitter_coords = getEmitterCoords(df500) # finds the coordinates of the all emitters
+  emitter_coords = getEmitterCoords(df500) # finds the coordinates of the all emitters 
   emitter_locs = getEmitterPositions(emitter_coords, latList, longList, grid_corners) # gets the location of emitters with in the grid
   grid = makeGrid(grid_corners, latList, longList, emitter_locs, df500) # creates grid composed of GridSquare objects
   return (grid, emitter_locs, emitter_coords, grid_corners, coords_array, latList, longList)

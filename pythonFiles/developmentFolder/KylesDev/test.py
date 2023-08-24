@@ -10,8 +10,9 @@ from Functionality import PathLossLib as pl
 #              jsonPath='webDevelopmentFiles/interactiveGrid/170x25LargeGrid_json.json',
 #              removeIndex=False)
 
-df = pd.read_parquet("datasets/fanchen_trilateration_2022_11_13.parquet")
-print(df)
+df = pd.read_parquet("datasets/1678683600000-sensor_1.parquet")
 
-df= pd.read_parquet("datasets/1678683600000-sensor_1.parquet")
-print(df)
+df.to_csv("datasets/sensor1_testing.csv")
+
+
+
