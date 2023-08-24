@@ -1,4 +1,5 @@
 # MobIntel-Project
+talk about commenting standards and how to understand what each comment for each function means
 
 ## Project Description
 This is where we will compile all out code that went towards this project. This project was working towards determining the trajectory of people along a street to help cities better plan for pandemics. With this kind of information, city planners could understand how people are moving and make precautions based on this information. As an overview, In our research, we encountered valuable insights regarding trilateration of RSSI values as a method for determining device positions. Recognizing its limitations, we boldly shifted our focus to exploring a promising new avenue—the grid system. While still in its developmental phase, the grid approach holds immense potential for revolutionizing our understanding of device positioning.​
@@ -124,7 +125,8 @@ related things.
 * deviceInSensorAreaDuration(probingTimes, DURATION_LIMIT)
 * newDetermineDuration(row, durationLimit)
 * determineMacHashDuration(filename)
-* getSubsetByRefSensorAndX(refSensor, x)
+* getSubsetByRefSensorAndX(blockDataFile, refSensor, x)
+* convertFanchen(fanchenFileName)
 
 #### ExploritoryAnalysisLib
 This library was of separate use during the project. When we were exploring forecasting

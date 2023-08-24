@@ -1,5 +1,9 @@
 """
 This file will hold constants that are to be used throughout this project
+
+Theo origin constants are mostly used for when we create a grid. It is the 
+bottom left point of the grid. The origin is a geocraphical point on earth
+surface in the form of (latitude, longitude)
 """
 
 GRID_170x25_ORIGIN = (26.71333451697524, -80.05695531266622)
