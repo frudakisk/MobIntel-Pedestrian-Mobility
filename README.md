@@ -1,16 +1,83 @@
 # MobIntel-Project
-talk about commenting standards and how to understand what each comment for each function means
-
-## Project Description
-This is where we will compile all out code that went towards this project. This project was working towards determining the trajectory of people along a street to help cities better plan for pandemics. With this kind of information, city planners could understand how people are moving and make precautions based on this information. As an overview, In our research, we encountered valuable insights regarding trilateration of RSSI values as a method for determining device positions. Recognizing its limitations, we boldly shifted our focus to exploring a promising new avenue—the grid system. While still in its developmental phase, the grid approach holds immense potential for revolutionizing our understanding of device positioning.​
 
 
 ## Table of Contents
-1. How to Find Stuff
-2. Libraries
-3. Drivers
-4. How to Use Libraries
-5. Commenting Convention
+1. Project Description
+2. Project History
+3. How to Find Stuff
+4. Libraries
+5. Drivers
+6. How to Use Libraries
+7. Commenting Convention
+
+---
+
+### Project Description
+The research question we will try to answer during this project is: how should crowds be managed in real-time during a pandemic to mitigate risk and ease the public fear of taking mass transit? This question will be addressed by bridging engineering and scientific models at the intersection of indoor pedestrian mobility, epidemiology, and travel behavior. Rather than investing in transit infrastructure and services in a short timeframe (which is especially challenging when transit agencies are struggling with staffing shortage and financial crisis), reshaping public transport mobility could be a more viable way.
+
+This GitHub Repository is where where we will compile all our code that goes towards this project. So far, This project was working towards determining the trajectory of people along a street to help cities better plan for pandemics. With this kind of information, city planners could understand how people are moving and make precautions based on this information. As an overview, In our research, we encountered valuable insights regarding trilateration of RSSI values as a method for determining device positions. Recognizing its limitations, we boldly shifted our focus to exploring a promising new avenue—the grid system. While still in its developmental phase, the grid approach holds immense potential for revolutionizing our understanding of device positioning.​ As of August 28th, 2023, we have some promising results from our grid system and are in the process of testing it with real data from the MobIntel sensors. More specific details about the history of this project can be found in the Project History Section
+
+---
+
+### Project History
+In this section, we will discuss the history of this project. This includes all attempted methods for solving our problem stated in the Project Description, as well as the details that went into these attempted methods so that future workers on this project can start where we left off. We initially focused on the problem of figure out where an emitting device, such as a mobile phone, was physically located. This was necessary since we are trying to get a trajectory of a single mobile device. The end goal was to get multiple points on a map and connect them in a certain order to show the trajectory that the mobile device moved. 
+
+
+#### Trilateration
+Trilateration constitutes a geometric methodology utilized to ascertain the coordinates of an unknown point of interest based on the measurement of distances from known reference points. When more than three distances are incorporated within this method, it extends to multilateration, allowing for increased accuracy in positioning determination.
+
+The deployment of trilateration within our study held promise due to the availability of multiple closely spaced sensors. These sensors, situated in close proximity, gather pertinent data concerning nearby devices. Notably, the Received Signal Strength Indicator (RSSI) value, garnered from the device's probe request, emerges as a critical datum. This RSSI value quantifies the signal's intensity upon its reception by MobIntel sensors. Generally, the RSSI value deteriorates with increasing distance between the sensor and the signal's origin point, establishing a perceptible correlation. Our objective encompassed an exploration of this correlation's robustness for trilateration, contingent on accurate distances derived from known positions. In undertaking this pursuit, we diligently reviewed pertinent literature to gain insight into this domain.
+
+However, our findings revealed the RSSI-to-distance correlation to be frail and inherently unreliable. Diverse factors, inclusive of weather conditions (humidity, precipitation), environmental context (urban, suburban, rural), device and sensor age, collectively influence the RSSI value. Despite this realization, driven by the magnitude of our available data, we persevered in our endeavor to explore potential solutions.
+
+Our trilateration implementation comprised two distinct methodologies. Initially, a "Conversion Table" was devised to establish a direct RSSI-to-distance correspondence. This table exists in two variants, available at 'datasets/rssiToDistanceCorrelation_V2.csv' and 'datasets/rssiToDistanceCorrelation.csv', with the former being preferred. Detailed insight into these conversion tables' development can be found in the PowerPoint slides located at 'media/powerpoints/WeeklyMeeting(05-31-23).pptx'. Regrettably, this approach's performance fell short of expectations.
+
+![Image](media/images/trilaterationResults.png)
+
+The accompanying image depicts the evaluation of multiple RSSI-to-distance conversion methods utilizing a dataset conducive to trilateration, containing 1000 data entries. For instance, when applying the New Lookup Table* and assessing the trilateration accuracy for points within a 5-meter radius of the true emitting device location, an accuracy of 8.4% was achieved. This signifies that among the 1000 points, 84 were positioned within 5 meters of the actual emitting device location. Despite these evaluations, the achieved accuracy across all methodologies proved inadequate for our project's exigencies. Consequently, we ventured into alternative methodologies for RSSI-to-distance conversion, given their salience in trilateration endeavors.
+
+The alternative approach hinged on the integration of machine learning models, with a particular emphasis on the K-Nearest Neighbors (KNN) methodology. Alas, the accuracy of this method, approximately 14%, was notably deficient. Intriguingly, deliberations emerged regarding the feasibility of correlating a range of distances to a single RSSI value, potentially augmenting accuracy. However, such a strategy was deemed unlikely to cater to our trilateration requirements. Given the lackluster performance, point plotting stemming from the machine learning method was eschewed due to inadequate RSSI-to-distance accuracy.
+
+Our trilateration pursuit encountered multiple impediments. Preliminary considerations acknowledged the limitations inherent in RSSI due to its intrinsic variability. A composite of diverse influences, encompassing weather dynamics, sensor location, environmental context, and device-sensor conditions, collectively contributed to its unreliability. Numerous factors lay beyond our control, while some remained immeasurable. In summation, trilateration emerges as a suboptimal technique for pinpointing mobile device locations, necessitating alternative approaches for accurate positioning.
+
+#### Forecasting Models
+Subsequent to the resolution to pivot away from trilateration, we embarked upon an exploration of alternative conceptual avenues. Among these, the realm of forecasting models emerged as a focal point of investigation. To briefly explain, forecasting models encompass a suite of techniques tailored to collate and manipulate data, engendering reliable and precise projections. In our context, this translated to harnessing the timestamps accompanying each probe request as captured by the MobIntel sensors. Our data was primed for such methods however, despite the inherent alignment between our data and forecasting methods, a deliberation ensued, casting doubt upon the suitability of this approach for our overarching objectives.
+
+Specifically, our current objectives centered on the accurate localization of emitting devices. While forecasting models excelled in forecasting the temporal clustering of individuals and their corresponding locations, a crucial shortcoming emerged—the inability to project the trajectories leading to these locations. As such, the forecasting methods, though proficient in prognostication, proved insufficient for our aim of tracing the trajectory of an individual device. Consequently, we adjudged the application of forecasting models infeasible within the scope of our endeavor.
+
+#### Development of the Grid System
+The grid system proceeds our trilateration efforts. In trilateration, we saw that we had some points that got pinned far away from its expected location. To help minimize this error, we encapsulated the street where our sensors are in a grid structure. A visual representation of this method can be seen in the image below.
+![Image](media/images/1mGrid.png)
+By encapsulating the street, it was projected that we will always have a localization result somewhere within the grid rather than 3 streets down, like what happend in trilateration. So, in theory, the smaller the grid, the better the results should be, however, this ideology does come with its own complications. Essentially, the grid system is the ground work for out localization method that is related to the path-loss method used to help determine the distance a device was using just an RSSI value. 
+
+In this grid system, we can determine the length and width of the grid as well as the size of the tiles within the grid. In the picture above, we have a 175x25 grid with tiles that are 1x1. All metrics are in meters. In our beginning phases, we would use data that had the known locations of emitting devices. So, in our grid, we would know which tile the emitting device was located in by using some cross reference methods. Similarly, we could also tell which tiles the MobIntel sensors were in. With this ground truth data, we could utilize path loss models for localization purposes and determine how far off we were from the actual location of an emitting device. 
+
+With this grid system, we could also calculate an "ideal RSSI score" for each tile per sensor. This means that for each tile, we would use a path loss mathematical model to determine the ideal RSSI value between the tile and a sensor. We would do this for each distance between the tile and sensors since there are multiple sensors within a grid. For example, if we have 5 sensors in a grid, a grid tile would have 5 ideal RSSI scores relating to each of the respective sensors. This score would be the basis on how we calculate the "calcualted RSSI value" which would be a mathematical function that calculates a value which is essentially the difference between the ideal RSSI value and an actual RSSI value caputered at that tile location. This score could only be calculated for tiles that we know have an emitter in them because then we would know the kinds of RSSI values captured at that spot. 
+
+We felt that this method would work better for us because all the signals that the sensors are receiving should be just within the street (now within the grid). Capitalizing on this, we could perform our localization method on the data we have that pertains to this street block and get more accurate localization results. Our plan is to expand this grid structure in one of two ways. We would either have a grid for each block of the street, resulting in less square footage overall, and therefore it would be less computationally challenging for our machines, or by putting a giant grid over the whole street of Clematis Street. This would result in more square footage.
+
+#### Testing the Grid System with Ground Truth Data
+The grid system underwent a vigorous testing phase. As explained in the section above, we have a dataset that contains a lot of data from known emitter locations. This gives us ground truth data that we can test our localization methods with. As a result of our testing, it was noted that the majority of our localization attempts were within 10 meters of the actual location of the known emitter positions. This was a great improvement from trilateration. 
+
+#### Testing the Grid System with MobIntel Data
+After testing the accuracy of our data with known emitter locations, we started testing without knowing the position of the emitting device. The idea was to listen to the majority of localized points. For example, in our data, we have around 950 probe request for a single position. Each request is to be localized to a tile and wherever the majority of the localizations went to, that would be the tile we pick as the "best localization". This method proved to be successful. The majority of the localizations for any given position were within 10 meters of the actual location of the emitting device. So after this testing phase, we can be confident that without knowing where a device was emitting, we could collect all the probe requests from it within the same moment in time, and optain a best localization for it and be confident it will be within 10 meters of its actual position.
+
+It would also be important to note that we began working on the concept of the "mini grid" which has so far show an even larger increase in accurracy. The idea here is to create a grid that encapsulates where the majority of localization were and perform the same localization method here. 
+
+Currently (08/28/2023), we are looking to gather more data to test out predicting a trajectory within a grid.
+
+---
+
+### Dataframes in Use
+Explain the dataframes we have been using so that there is a general understanding of the data we are making all our assumptions and planning on.
+
+There is the block data we make from fanchens data
+
+there is fanchens WPB data
+
+There is the raw data from mobintel
+
+There is the data from the grids that is flattened into a csv file
 
 ---
 
