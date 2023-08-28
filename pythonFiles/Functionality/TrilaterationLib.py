@@ -1,3 +1,10 @@
+"""
+This file focuses on functions that dealt with trilateration algorithms. We also
+attempted a multilateration method, but it performed worse than trilateration.
+This file should contain functions that deal with trilateration and the functions 
+that help us visualize trilateration
+"""
+
 import sys, math, numpy as np, folium, requests, json, webbrowser
 from geopy import distance
 
@@ -11,11 +18,14 @@ api = response.json()['results']
 
 #Multilaterate using the distances from the sensors
 def multilaterate(coords, dists):
-    """coords is a 2D array of coordinates. coords will be populated with the output of 'getCoordinates' function.
-    Each index of the array has an (x, y) value for the sensor put into it. That index in the array 'dists' will
-    match the distance from that sensor to the emitter. dists will be populated with the output of the function 'rssiToDistanceV2()'.
-    coords must be full of every sensor that picked up the emitter before multilaterate is called.
-    coords must have the same number of indices as dists."""
+    """
+    coords: is a 2D array of coordinates. coords will be populated with the output of 'getCoordinates' function.
+    dists: dists is an array. Each index of the array has an (x, y) value for the sensor put into it. 
+    That index in the array 'dists' will match the distance from that sensor to the emitter. 
+    dists will be populated with the output of the function 'rssiToDistanceV2()'.
+    Description: coords must be full of every sensor that picked up the emitter before multilaterate is called.
+    coords must have the same number of indices as dists.
+    """
     P = [[]]
 
     if len(coords) > len(dists):
@@ -80,9 +90,18 @@ def multilaterate(coords, dists):
 
 
 def trilaterate(sXLoc, sXDist, sYLoc, sYDist, sZLoc, sZDist):
-    """sXLoc, sYLoc, and sZLoc should be tuple of (lat,lon)
-    This function returns a tuple (lat, long) of the trilaterated location
-    using the information from 3 locations and their distances """
+    """
+    sXLoc: a tuple (lat, long) which tells us the location of sensor X
+    sXDist: The distance the emitting device is from sensor X
+    sYLoc: a tuple (lat, long) which tells us the location of sensor Y
+    sYDist: The distance the emitting device is from sensor Y
+    sZLoc: a tuple (lat, long) which tells us the location of sensor Z 
+    sZDist: The distance the emitting device is from sensor Z
+    Returns: a (lat, long) position of where this algorithms predicts the emitting
+    devices is located
+    Description: This function returns a tuple (lat, long) of the trilaterated 
+    location using the information from 3 locations and their distances.
+    """
 
     earthR = 6378137 #Earth radius in m
     S1Lat = sXLoc[0] #coordinate of sensor 1
@@ -152,19 +171,33 @@ def trilaterate(sXLoc, sXDist, sYLoc, sYDist, sZLoc, sZDist):
 
 
 def plotRowOnMap(row, sensorSet, trueEmitterLocationSet, data, m, d=None, createCSV=False, oldVersion=True):
-    """plots the trilaterated position of the emitter at each row of
+    """
+    row: a row from the fanchen_trilateration_2022_11_13.parquet file, or a file of
+    the same format
+    sensorSet: must be an empty set() to hold all sensor locations. we outsource these
+    coordinates because we want to plot them later.
+    trueEmitterLocationSet: must be an empty set() that holds all the actual emitter 
+    locations that we are using as our ground truth.
+    data: must be an empty list() that will hold data for a data frame if the user decides
+    to create a data frame object from this function
+    m: a folium.Map object for us to add markers to. This is how we visualize
+    the trilateration outcomes
+    d: the radius at which the user wants to plot trilaterated points (meters)
+    createCSV: if set to true, loads @data with information to be easily converted to
+    a csv file.
+    oldVersion: if true, we use old method of trilateration, if true we use newer version
+    (new version is better)
+    Returns: data about a trilaterated point saved in sensorSet, trueEmitterLocationSet
+    and data
+    Description:
+    plots the trilaterated position of the emitter at each row of
     the trilateration dataset. Also keep track of which sensors were being used
     and the actual locations of the emitter.
-    row must be a row of data in the form of a row in fanchen_trilateration_2022_11_13.parquet
-    sensorSet must be an empty set()
-    trueEmitterLocationSet must be an empty set()
-    data must be an empty list()
-    m must be a folium.Map() object
-    d is the distance at which you want to plot locations
-    createCSV if set to true loads data with information to be easily converted to csv file
+    row must be a row of data in the form of a row in fanchen_trilateration_2022_11_13.parquet.
     At the end of this function, sensorSet, trueEmitterLocation, and data will be loaded with information
     That can be used to plot the sensors that were used in trilateration
-    as well as plotting the actual location of the emitter at the time of trilateration"""
+    as well as plotting the actual location of the emitter at the time of trilateration
+    """
     sXCoords = getCoordinates(row["sensor_x"])
     sYCoords = getCoordinates(row["sensor_y"])
     sZCoords = getCoordinates(row["sensor_z"])
@@ -204,12 +237,15 @@ def plotRowOnMap(row, sensorSet, trueEmitterLocationSet, data, m, d=None, create
 
 
 def getCoordinates(sensorNum):
-    """sensorNum can be of type float, numpy.float32, or string
-    Given the sensor number, this function returns the location of the sensor
-    in the form of a tuple (latitude, longitude)
-
+    """
+    sensorNum: can be of type float, numpy.float32, or string. Represents a sensor
+    id number
+    Returns: the geographical location of the emitter as a tuple of (lat, long)
+    Description: Given the sensor number, this function returns the location 
+    of the sensor in the form of a tuple (latitude, longitude).
     single digit sensor numbers must be prefixed with 0 (i.e., 02 instead of just 2)
-    if an s is prefixing the sensor, it will be removed (i.e., s02 -> 02)"""
+    if an s is prefixing the sensor, it will be removed (i.e., s02 -> 02)
+    """
     if type(sensorNum) == int:
         sensorNum = str(sensorNum)
     elif type(sensorNum) == np.float32 or type(sensorNum) == float:
@@ -229,8 +265,14 @@ def getCoordinates(sensorNum):
         
 
 def getEmitterCoords(row):
-    """This function returns the location of an emitter given a row of data from
-    the trilateration dataframe fanchen_trilateration_2022_11_13.parquet"""
+    """
+    row: a row of data from fanchen_trilateration_2022_11_13.parquet dataframe
+    or a dataframe of similar structure
+    Returns: location of emitter as a tuple (latitude, longitude)
+    Description: This function returns the location of an emitter given a row 
+    of data from the trilateration dataframe 
+    fanchen_trilateration_2022_11_13.parquet
+    """
     refCoords = getCoordinates(row['ref_sensor'])
     emitterCoords = gLib.adjustedLongitude(refCoords, row['x'])
     return emitterCoords
@@ -242,8 +284,9 @@ def isSingleDigit(num):
     num: this parameter can be of type integer, float, or string but
     will be converted to an integer value before calculation.
     Return: returns true if num can be represented as a single digit, false if otherwise
-    If num is a float, it will be rounded to the nearest whole number, and then calculations
-    will proceed.
+    Description: If num is a float, it will be rounded to the nearest whole number, 
+    and then calculations will proceed. We basically figure out if the inputted 
+    number is a single digit or not.
     """
     if type(num) == float:
         num = round(num)
@@ -259,7 +302,10 @@ def isSingleDigit(num):
     
 
 def jprint():
-    """Prints out the api in json format"""
+    """
+    Returns: Nothing
+    Description: Prints out the MobIntel api in json format
+    """
     text = json.dumps(api, sort_keys=True, indent=4)
     print(text)
 
@@ -269,9 +315,10 @@ def createTrilateratedMap(df, headCount, centralPoint, pathName, d=None, createC
     df: trilateration dataframe. ususally this is fanchen_trilateration_2022_11_13.parquet
     headCount: how many rows we want to plot
     centralPoint: where the center of the map will be focused on upon rendering
+    pathName: The name of the file where the map will be. Must be an html path.
     d: radius of how far, in meters, we want to plot trilaterated point from the actual locations of emitters
     createCsv: a boolean that when true, creates a csv file, false will not create anything
-    oldVersion: if true, we use old method of trilateration, if true we use newer version
+    oldVersion: if true, we use old method of trilateration, if true we use newer version (new version is better)
     pathName: the file path where you want to create the map html file
     """
     subset = df.head(headCount)

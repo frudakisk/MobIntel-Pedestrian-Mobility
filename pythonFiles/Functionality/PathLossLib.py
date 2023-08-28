@@ -3,8 +3,9 @@ import math
 def freeSpacePathLossLinear(distance):
   """
   distance: distance in meters used to calculate ideal rssi value
-  returns: ideal rssi value
-  This function returns the idea rssi using the free space path loss linear model
+  returns: ideal rssi value as a negative integer
+  Description: This function returns the idea rssi using the free space path loss 
+  linear model
   """
   transmitPower = 32.15
   tGain = pow(10, 5/10) #formula that converts 5 dBi to linear scale. https://shopdelta.eu/dbi-power-gain-of-isotropic-antenna_l2_aid836.html
@@ -16,8 +17,9 @@ def freeSpacePathLossLinear(distance):
 def freeSpacePathLossdB(distance):
   """
   distance: distance in meters used to calculate the ideal rssi value
-  returns: something in dbs I think idk i didnt make this function
-  This function is used to help pathLossExponent calculate its ideal rssi value
+  returns: returns idea rssi value in dbs which is represented as a negative float
+  Description: This function is used to help pathLossExponent calculate its ideal 
+  rssi value
   """
   transmitPower = 30 #this in dBm
   tGain = 2.85 #dBi to dB = dBi - 2.15
@@ -30,8 +32,9 @@ def freeSpacePathLossdB(distance):
 def pathLossExponent(distance):
   """
   distance: distance in meters used to calculate the ideal rssi value
-  returns: ideal rssi value
-  other two are struggling (freespacePathLossdb/Linear), so this function is a better version of the two"""
+  returns: ideal rssi value as a negative float
+  Description: other two are struggling (freespacePathLossdb/Linear), so this 
+  function is a better version of the two"""
   Friis = (freeSpacePathLossdB(0.89))
   #print("Friis is:", Friis)
   #print("Second term is:", (10 * 3) * math.log((distance / 0.89),10))
@@ -46,8 +49,8 @@ def FSPL(distance):
   """
   distance: distance in meters used to calculate the ideal rssi value
   returns: ideal rssi value
-  based on https://www.pasternack.com/t-calculator-fspl.aspx?utm_campaign=Power_Combiners&keyword=&gclid=CjwKCAjwqZSlBhBwEiwAfoZUIC8PAydtbR9-tlF6zMTyv6Ei-CCCDZD86EJshD0cqsX4GtGsMiCA2xoCUGkQAvD_BwE
-  
+  Description: based on 
+  https://www.pasternack.com/t-calculator-fspl.aspx?utm_campaign=Power_Combiners&keyword=&gclid=CjwKCAjwqZSlBhBwEiwAfoZUIC8PAydtbR9-tlF6zMTyv6Ei-CCCDZD86EJshD0cqsX4GtGsMiCA2xoCUGkQAvD_BwE
   """
   d = 20 * math.log(distance, 10)
   f = 20 * math.log((2.4 * pow(10, 9)), 10)
@@ -61,11 +64,12 @@ def FSPL(distance):
 
 def pathLossVanilla(distance, pathLossExponent, transmitterPower):
   """
-  Using the formula L = 10*n*long_10(d) + C
   distance: the distance between the emitting device and the sensor
   pathLossExponent: the path loss exponent used in calculation. For urban areas, this value is between 2.7 and 3.5
   For rural areas, this value is 2, and for suburban areas it is between 3 and 5
   transmitterPower: this value is in dBm and is the transmitter power of the emitting device, not the sensor.
-  In our case, fanchen used an emitter that had a transmission power of 30 dBm"""
+  Description: In our case, fanchen used an emitter that had a transmission power of 30 dBm
+  Using the formula L = 10*n*long_10(d) + C
+  """
   idealRssi = transmitterPower + 10 * pathLossExponent * math.log10(distance)
   return idealRssi

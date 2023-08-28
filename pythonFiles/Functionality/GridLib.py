@@ -592,9 +592,9 @@ def completeGrid(origin, latDistance, longDistance, adjustedMeridianDistance, ad
 
 def localizationTest(grid, df, emitter_locs):
   """
-  grid:
-  df:
-  emitter_locs:
+  grid: a grid object made from completeGrid()
+  df: 
+  emitter_locs: a list of the locations of emitters from getEmitterPositions()
   returns: A historgram graph that shows the distance error of localized probe requests
   IDK IF ITS FOR ONE EMITTER OR ALL EMITTERS
   I will also be returing a dataframe that contains all the rows in the df that were

@@ -1,3 +1,12 @@
+"""
+This file containts functions that dealt with converting an RSSI value to a 
+distance (meters). The main component of these functions are the lookup tables that
+were developed by doing a lot of averaging of rssi data. Trilateration required us
+to conert an RSSI value to a distance, and because of this, trilateration did not
+give us the results we required. In short, it is very difficult to get an accurate
+conversion from and RSSI value to a distance - more information is required.
+"""
+
 import pandas as pd
 import statistics
 
@@ -11,7 +20,7 @@ def rssiToDistance(rssi):
     """
     rssi: an rssi value that is use to covert to distance
     Return: a distance in meters
-    using the imported lookup table, we convert an rssi value (integer)
+    Description: using the old imported lookup table, we convert an rssi value (negative integer)
     to a distance. This version uses the lookupTable_V1 and provides some compensation
     for rssi values outside of its bounds. For rssi values higher than -46, we return a distance of 1m
     For rssi values lower than -94, we return a distance of 500m"""
@@ -48,7 +57,7 @@ def rssiToDistanceV2(rssi):
     """
     rssi: an rssi value that is used to convert to distance 
     Return: a distance in meters
-    This is version 2 of converting an rssi value to a distance.
+    Description: This is version 2 of converting an rssi value to a distance.
     We utilize the lookupTable_V2 file to do this conversion.
     There will be no lower bounds for this version since we will not be accepting
     rssi values lower than -61.
