@@ -1,3 +1,9 @@
+"""
+This library was created to hold all the functions that were used in developing
+a machine learning model. The purpose of this was to see if k-nearest neighbors 
+algorithm was helpful in picking the correct rssi value based on a give distance.
+The accuracy of this machine learning model yield around 14% each time we ran it.
+"""
 import pandas as pd, numpy as np
 import matplotlib.pyplot as plt
 from sklearn.neighbors import KNeighborsRegressor

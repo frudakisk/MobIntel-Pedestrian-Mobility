@@ -1,3 +1,8 @@
+"""
+In the GridLib library, we have functions that were used to create, visualize, and analyze 
+information that was used in creating the grid that lays over Clematis Street. In here, we
+can create any size grid on any location on the earth. 
+"""
 from geopy import distance
 from math import pi, cos
 import folium, numpy as np, matplotlib.pyplot as plt, sys, pandas as pd

@@ -1,3 +1,8 @@
+"""
+This library is intended to hold all functions that are related to path loss models. Path loss models
+are mathematical algorithms that determine the "ideal" rssi value based on certain values such as distance, 
+path loss index, transmittion power, etc. 
+"""
 import math
 
 def freeSpacePathLossLinear(distance):
