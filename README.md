@@ -240,6 +240,7 @@ functions to be in working order. A list of the drivers will be presented here. 
 * mLLibDriver
 * DataFiltrationLibDriver
 * ExploritoryAnalysisLibDriver
+* KNeighborsDriver
 
 ---
 
