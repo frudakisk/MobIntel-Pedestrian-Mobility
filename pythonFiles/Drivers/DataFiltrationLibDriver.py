@@ -5,6 +5,8 @@ from Functionality import DataFiltrationLib as dfl
 
 filename = "datasets/1678683600000-sensor_1.parquet"
 fanchenFile = "datasets/RSSI_localization_data_WPB/2022_11_08.csv"
+df500 = pd.read_csv("datasets/block_500_only.csv")
+
 df = dfl.read_file(filename)
 print(df)
 
@@ -26,7 +28,7 @@ df = dfl.determineMacHashDuration(filename)
 print(df)
 df.to_csv("datasets/machashDuration.csv")
 
-subset = dfl.getSubsetByRefSensorAndX(refSensor=22, x=0)
+subset = dfl.getSubsetByRefSensorAndX(blockDataFrame=df500, refSensor=22, x=0)
 print("showing the subset of data taken from df500")
 print(subset)
 
