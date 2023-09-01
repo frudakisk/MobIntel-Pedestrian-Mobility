@@ -598,7 +598,7 @@ def completeGrid(origin, latDistance, longDistance, adjustedMeridianDistance, ad
 def localizationTest(grid, df, emitter_locs):
   """
   grid: a grid object made from completeGrid()
-  df: 
+  df: a blockData csv file that has known emitter locations
   emitter_locs: a list of the locations of emitters from getEmitterPositions()
   returns: A historgram graph that shows the distance error of localized probe requests
   IDK IF ITS FOR ONE EMITTER OR ALL EMITTERS
@@ -610,9 +610,8 @@ def localizationTest(grid, df, emitter_locs):
   random.seed(0) # ensures same numbers are chosen
   count = 0
   results = np.zeros(100) # creates empty numpy array to hold results
-  device_row = df.iloc[2] # gets random row
-  # runs localization however many times
   
+  # runs localization however many times
   while count < 100:
     rand_row = random.randint(0,df.shape[0] - 1) # picks number from 0 to size of dataframe - 1
     device_row = df.iloc[rand_row] # gets random row 
@@ -644,12 +643,16 @@ def localizationTest(grid, df, emitter_locs):
 
 def gridLocalizationTest(grid, df, emitter_locs, rand_row):
   """
-  grid:
-  df:
-  emitter_locs:
-  rand_row:
-  Returns:
-  Description:
+  grid: a grid object made from completeGrid()
+  df: a blockData csv file that has known emitter locations
+  emitter_locs: a list of the locations of emitters from getEmitterPositions()
+  rand_row: a randomly chosen number between 0 and the dataframe size
+  Returns: The distance between the localization estimate and 
+  the actual location is calculated and returned. 
+  Description: This is our attempt at trying to localize an emitter location. In
+  this case, we have known emitter locations. When we use data to try to find the
+  actual location of the emitter, we can find a distance error between the
+  localized point and the actual location of the emitter.
   """
 
   device_row = df.iloc[rand_row] # gets random row
@@ -716,7 +719,7 @@ def gridLocalization(grid, df, emitter_locs):
   the dictionary of localization guesses for that emitterLoc.
   Description: This is our attempt at trying to localize an emitter location. In
   this case, we have known emitter locations. When we use data to try to find the
-  actual location of the emitteer, we can find a distance error between the
+  actual location of the emitter, we can find a distance error between the
   localized point and the actual location of the emitter.
   """
   #Instead of passing just one emitter_loc, I want to pass in 
