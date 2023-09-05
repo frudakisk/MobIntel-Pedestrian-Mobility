@@ -5,10 +5,12 @@ from Functionality import DataFiltrationLib as dfl
 
 filename = "datasets/1678683600000-sensor_1.parquet"
 fanchenFile = "datasets/RSSI_localization_data_WPB/2022_11_08.csv"
-df = dfl.read_file(filename)
+
+# USE THIS FOR MOBINTEL GRID AND LOCALIZATION
+df = dfl.dataInitialization()
 print(df)
 
-df = dfl.sensor_trim(df)
+df = dfl.read_file(filename)
 print(df)
 
 df1 = dfl.mac_count(pqfile=df, cutoff=1000)
@@ -26,10 +28,11 @@ df = dfl.determineMacHashDuration(filename)
 print(df)
 df.to_csv("datasets/machashDuration.csv")
 
-subset = dfl.getSubsetByRefSensorAndX(refSensor=22, x=0)
+subset = dfl.getSubsetByRefSensorAndX(fanchenFile, refSensor=22, x=0)
 print("showing the subset of data taken from df500")
 print(subset)
 
 
 df500, df400 = dfl.convertFanchen(fanchenFileName=fanchenFile)
 print(df500)
+
