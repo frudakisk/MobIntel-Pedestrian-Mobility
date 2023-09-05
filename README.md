@@ -55,14 +55,14 @@ The grid architecture further facilitated the derivation of an "ideal RSSI score
 This methodological shift was conceived to harness the confined spatial extent of signals received by the sensors, inherently within the precincts of the street (now encapsulated within the grid). Through this strategic pivot, we anticipated enhanced efficacy in the execution of our localization algorithm applied to data specific to the street block. Our trajectory involves the expansion of this grid scheme via one of two approaches. The first entails dedicating a separate grid to each street block, resulting in a diminished computational load, whereas the second contemplates a singular expansive grid overlaying the entirety of Clematis Street, albeit entailing a larger spatial expanse.
 
 #### Testing the Grid System with Ground Truth Data
-The grid system underwent a vigorous testing phase. As explained in the section above, we have a dataset that contains a lot of data from known emitter locations. This gives us ground truth data that we can test our localization methods with. As a result of our testing, it was noted that the majority of our localization attempts were within 10 meters of the actual location of the known emitter positions. This was a great improvement from trilateration. 
+The grid system underwent a vigorous testing phase. As explained in the section above, we have a dataset that contains a lot of data from known emitter locations. This gives us ground truth data that we can test our localization methods with. As a result of our testing, it was noted that the majority of our localization attempts were within 10 meters of the actual location of the known emitter positions. This was a significant improvement from trilateration. 
 
 #### Testing the Grid System with MobIntel Data
-Subsequent to rigorously evaluating the precision of our dataset through comparative analysis with known emitter positions, our investigative endeavors transitioned into an experimental phase devoid of prior emitter position knowledge. This novel methodology was anchored in the principle of aggregating predominant localized instances. Specifically, within our dataset, an approximate count of 950 probe requests emanated from a singular position. Each such request necessitates localization to a distinct tile, and it was envisioned that the collective trend of localizations would guide our determination of the "optimal localization." 
+Subsequent to rigorously evaluating the precision of our dataset through comparative analysis with known emitter positions, our investigative endeavors transitioned into an experimental phase devoid of prior emitter position knowledge. This novel methodology was anchored in the principle of aggregating predominantly localized instances. Specifically, within our dataset, an approximate count of 950 probe requests emanated from a singular position. Each such request necessitates localization to a distinct tile, and it was envisioned that the collective trend of localizations would guide our determination of the "optimal localization." 
 
-This methodology garnered demonstrable success. The preponderance of localizations for any given position consistently clustered within a proximal distance of 10 meters from the genuine emitting device's location. The culmination of this testing phase engenders a profound degree of confidence in our ability to engender precise localizations without a priori knowledge of the emitting device's whereabouts. It is evident that concurrent collection of all probe requests from a particular device, united in temporal synchrony, yields a localization outcome. This outcome can be deemed the "best localization" with a high level of assurance, given its fidelity to the emitting device's actual location, generally within a 10-meter radius.
+This methodology garnered demonstrable success. The preponderance of localizations for any given position is consistently clustered within a proximal distance of 10 meters from the genuine emitting device's location. The culmination of this testing phase engenders a profound degree of confidence in our ability to engender precise localizations without a priori knowledge of the emitting device's whereabouts. It is evident that the concurrent collection of all probe requests from a particular device united in temporal synchrony, yields a localization outcome. This outcome can be deemed the "best localization" with a high level of assurance, given its fidelity to the emitting device's actual location, generally within a 10-meter radius.
 
-It is pertinent to acknowledge our concurrent exploration of the "mini grid" concept, a venture that has showcased a marked augmentation in precision. In essence, this concept entails the creation of a localized grid encompassing areas characterized by the density of localized instances. The same localization methodology is then applied within this miniaturized grid, facilitating enhanced accuracy in localization outcomes.
+It is pertinent to acknowledge our concurrent exploration of the "mini-grid" concept, a venture that has showcased a marked augmentation in precision. In essence, this concept entails the creation of a localized grid encompassing areas characterized by the density of localized instances. The same localization methodology is then applied within this miniaturized grid, facilitating enhanced accuracy in localization outcomes.
 
 As of the current date (08/28/2023), our focus is directed toward the accrual of additional data to facilitate the empirical examination of trajectory prediction within a grid-based framework. This trajectory prediction endeavor represents an ambitious pursuit, as we seek to unravel the patterns underlying the movement of devices within the defined spatial confines.
 
@@ -72,23 +72,23 @@ As of the current date (08/28/2023), our focus is directed toward the accrual of
 There are several types of data frames we have been working with so far. In this section, we will briefly go over some of the more common ones used so that future developers have a good understanding of them. We shall present the name of the data frame, a short description of it, and then a snapshot of the data frame for reference.
 
 #### Block Data
-This data referes to a condensed version of a fanchenWPB dataset file. The ref_sensor column referes to a sensor id number that an emitting device is near to. The x column represents how far away the emitting device is from the ref_sensor. The distance is always in meters and always east from the ref_sensor. The proceeding columns are of the sensors that are on the same street block as the emitter. The values of these columns are RSSI values that were recieved. In the image below, we are looking at data from Street Block 500. This means that each emitter location was on block 500 along Clematis Street and the sensors are all within that same street block. This type of data frame can be created by using the convertFanchen() function in the DataFiltrationLib.py file.
+This data refers to a condensed version of a fanchenWPB dataset file. The ref_sensor column refers to a sensor ID number that an emitting device is near to. The x column represents how far away the emitting device is from the ref_sensor. The distance is always in meters and always east from the ref_sensor. The proceeding columns are of the sensors that are on the same street block as the emitter. The values of these columns are RSSI values that were received. In the image below, we are looking at data from Street Block 500. This means that each emitter location was on block 500 along Clematis Street and the sensors are all within that same street block. This type of data frame can be created by using the convertFanchen() function in the DataFiltrationLib.py file.
 
 ![Image](media/images/block_500_only_screenshot.png)
 
 ### Fanchens WPB Data
-This kind of data was created by Fanchen Bao. He went out to Clematis Street and collected his own data with the MobIntel sensors. For a visual explaination of what the columns mean in this data, please refer to the slide 3 of PowerPoint presentations media/powerpoints/WeeklyMeeting(05-31-23).pptx. 
+This kind of data was created by Fanchen Bao. He went out to Clematis Street and collected his own data with the MobIntel sensors. For a visual explanation of what the columns mean in this data, please refer to slide 3 of PowerPoint presentations media/powerpoints/WeeklyMeeting(05-31-23).pptx. 
 
 ![Image](media/images/fanchenWPBImage.png)
 
 ### Raw MobIntel Data
-This is the data that we recieve directly from the MobIntel sensors. There are a lot of columns with millions of rows. We shall briefly explain some of the more important columns. The ```probeid``` column is a unique identifier for each probe request that the MobIntel sensor captures. The ```sensorid``` column referes to the sensor that caught this signal. ```deviceid``` is a unique identifier for the device that sent the probe request. It has no correlation to the actual device. The ```machash``` column is a hashed version of the mac address of the device that sent the probe request. Many mobile devices, such as phones, create a virtual mac address, which is a randomly generated mac address that changes every time a probe request is sent out. ```isphysical``` tells us if the device has a physical mac address. Devices that have a physical mac address are usually printers, fax machines, desktop computers, landlines, etc. Essentially, devices that do not move very often. The ```probingtime``` column tells us what day and time the probe request was captured. The ```rssi``` column is the recieved signal strength indicator number that the sensor got when capturing the probe request. The following three columns have been of very little use to us so far. 
-For a more detailed explaination of each column, please refer to the MobIntel documentation.
+This is the data that we receive directly from the MobIntel sensors. There are a lot of columns with millions of rows. We shall briefly explain some of the more important columns. The ```probeid``` column is a unique identifier for each probe request that the MobIntel sensor captures. The ```sensorid``` column refers to the sensor that caught this signal. ```deviceid``` is a unique identifier for the device that sent the probe request. It has no correlation to the actual device. The ```machash``` column is a hashed version of the mac address of the device that sent the probe request. Many mobile devices, such as phones, create a virtual mac address, which is a randomly generated mac address that changes every time a probe request is sent out. ```isphysical``` tells us if the device has a physical mac address. Devices that have a physical mac address are usually printers, fax machines, desktop computers, landlines, etc. Essentially, devices that do not move very often. The ```probingtime``` column tells us what day and time the probe request was captured. The ```rssi``` column is the received signal strength indicator number that the sensor got when capturing the probe request. The following three columns have been of very little use to us so far. 
+For a more detailed explanation of each column, please refer to the MobIntel documentation.
 
 ![Image](media/images/mobIntel_raw_data_screenshot.png)
 
 ### Grid Data
-When we create a grid structure with our code, we also flatten the structure and turn it into a csv file so that we may work with the data we developed. Each time we create a grid, this csv file is developed. Each row represents a tile within the grid. The unique identifier for each tile is the ```location``` column, which represents the coordinate of the tile within the grid. The ```corners``` column is simple the geographical co0ordinates of the 4 corners of each tile. This became important when we were trying to place sensors within the grid. Columns such as center, sensor_distance, is_emitter, and hasSensor are self explanatory. However, columns such as avg_RSSI, mode_RSSI, best_RSSI, is_emitter, score, and localizationGuesses were only meaningful if we have data for known emitter locations. These columns were used for informational purposes and helped us learn a lot. When applying the grid to a real world application, these columns should be ommited to save space. The ```calculated_RSSI``` column represents the "ideal" RSSI value, which means it shows what the RSSI value should be at the current distance between the tile location and each respective sensor location by using a path loss model.
+When we create a grid structure with our code, we also flatten the structure and turn it into a csv file so that we may work with the data we developed. Each time we create a grid, this csv file is developed. Each row represents a tile within the grid. The unique identifier for each tile is the ```location``` column, which represents the coordinate of the tile within the grid. The ```corners``` column is simply the geographical coordinates of the 4 corners of each tile. This became important when we were trying to place sensors within the grid. Columns such as center, sensor_distance, is_emitter, and hasSensor are self-explanatory. However, columns such as avg_RSSI, mode_RSSI, best_RSSI, is_emitter, score, and localizationGuesses were only meaningful if we have data for known emitter locations. These columns were used for informational purposes and helped us learn a lot. When applying the grid to a real-world application, these columns should be omitted to save space. The ```calculated_RSSI``` column represents the "ideal" RSSI value, which means it shows what the RSSI value should be at the current distance between the tile location and each respective sensor location by using a path loss model.
 
 ![Image](media/images/grid_data_screenshot.png)
 ---
@@ -98,12 +98,12 @@ When we create a grid structure with our code, we also flatten the structure and
 In this readme file, we have categorized the abundant information as follows: On the highest level of organization, we have several
 parent folders that contain information. The parent folders are datasets, media, pythonFiles, and webDevelopmentFiles.
 Within the datasets folder, we have all the data sets that were used during our project. It also includes datasets that we 
-created during our project. Mostly, they were developed from pre existing data sets provided to us, but with analysis data added into them.
-In the media folder, we include things such as images and maps. Images is self explanatory, but the maps section includes html files that were
-generated via out trilateration algorithms, or our grid visualization efforts. The pythonFiles folder is the meat of this assignment. In here we have 3 seperate
+created during our project. Mostly, they were developed from pre-existing data sets provided to us, but with analysis data added into them.
+In the media folder, we include things such as images and maps. Images is self self-explanatory, but the maps section includes HTML files that were
+generated via our trilateration algorithms or our grid visualization efforts. The pythonFiles folder is the meat of this assignment. Here we have 3 separate
 subfolders; developmentFolder, Drivers, and Functionality. The developmentFolder is a sort of playground where each of the developers can play with some of the
-code for development purposes. The Drivers folder contains python files that utilize the libraries developed throughout this process. It tests and makes sure that
-any updates given to any functionality still provide outputs that result in 0 errors. The Functionality folder holds all the libraries used in this project. For more detailed descriptions of the libraries, see the Libraries section of this readme file. Finally, the webDevelopmentFiles is the last parent folder. In this folder, we contain files that work with web development. Currently, there are two sub folders. Of the two, interactiveGrid is of larger importance. In this subfolder, we have the code for our interactive grid visualization. In the other subfolder, we have code written in php that revolved around various aspects of the project including trilateration, random waypointing, and other topics. 
+code for development purposes. The Drivers folder contains Python files that utilize the libraries developed throughout this process. It tests and makes sure that
+any updates given to any functionality still provide outputs that result in 0 errors. The Functionality folder holds all the libraries used in this project. For more detailed descriptions of the libraries, see the Libraries section of this readme file. Finally, the webDevelopmentFiles is the last parent folder. In this folder, we contain files that work with web development. Currently, there are two subfolders. Of the two, interactiveGrid is of larger importance. In this subfolder, we have the code for our interactive grid visualization. In the other subfolder, we have code written in PHP that revolved around various aspects of the project including trilateration, random waypointing, and other topics. 
 
 ---
 
@@ -111,10 +111,10 @@ any updates given to any functionality still provide outputs that result in 0 er
 
 #### RSSIToDistanceLib
 This library was created to separate the functionality of converting an rssi value
-to a distance. In total, there are two versions to do this. The first version
+to a distance. In total, there are two versions of this. The first version
 "rssiToDistance()" is the older, depreciated version of this conversion. It uses an older
-lookup table that was updated lated on. rssiToDistanceV2() is the newest, and better, version
-of this conversion. Its accuracy was better by a around 2% on average. Overall, the general
+lookup table that was updated later on. rssiToDistanceV2() is the newest, and better, version
+of this conversion. Its accuracy was better by around 2% on average. Overall, the general
 method of converting an rssi value to a distance was unsuccessful due to the low accuracy of both
 functions.
 
@@ -158,11 +158,24 @@ can create any size grid on an location on the earth.
 * completeGrid(origin, latDistance, longDistance, adjustedMeridianDistance, adjustedParallelDistance, df500)
 * localizationTest(grid, df, emitter_locs)
 * gridLocalizationTest(grid, df, emitter_locs, rand_row)
+* clusterCheck(loc_list, cluster_list, start_loc, grid)
+* clusterLocalization(loc_list, grid, mini_grid, actual_loc)
+* mini_grid(grid, start_loc, df)
 * gridLocalization(grid, df, emitter_locs)
 * generateLocalizationGuesses(row, grid, numberOfGuesses, data)
 * csvTojson(csvFilePath, jsonPath, removeIndex=False)
 * localizecsv(csvFilePath, csvOutputFilePath, localizationData)
 * getActiveEmitterLocs(emitter_locs)
+
+* # MobIntel block:
+* getGridDimensions(all_data)
+* GridSquareMI ~ Class
+* makeGridMI(grid_corners, latList, longList, df)
+* runLocalizationMI(grid, df, grid_corners)
+* gridLocalizationMI(grid, df, rand_row)
+* clusterCheckMI(loc_list, cluster_list, start_loc, grid)
+* clusterLocalizationMI(loc_list, grid)
+* mini_gridMI(grid, start_loc, df)
 
 #### TrilaterationLib
 This library includes functionality that was used to trilaterate points on map. This library uses other
@@ -180,9 +193,9 @@ that were used to plot points on a map to visualize how successful we were trila
 
 #### MLLib
 This library was created to hold all the functions that were used in developing
-a machine learning model. The ourpose of this was to see if k-nearest neighbors 
-algorithm was helpful in picking the correct rssi value based on a give distance.
-The accuracy of this machine learning model yield around 14% each time we ran it.
+a machine-learning model. The purpose of this was to see if the k-nearest neighbors 
+algorithm was helpful in picking the correct rssi value based on a given distance.
+The accuracy of this machine learning model yielded around 14% each time we ran it.
 
 * lambdaRound(row)
 * sensorDistance(sensorId)
@@ -192,11 +205,10 @@ The accuracy of this machine learning model yield around 14% each time we ran it
 * KNN()
 
 #### DataFiltrationLib
-This library was indended to contain all the functions used when we filter
-raw data from the MobIntel sensors. There are a lot of rows and columns that have no been
-necessary for out needs throughout this project, so we developed functions to quickly
-trim them down to what we need. This library also includes functions that revolve around machash
-related things.
+This library was intended to contain all the functions used when we filter
+raw data from the MobIntel sensors. There are a lot of rows and columns that have not been
+necessary for our needs throughout this project, so we developed functions to quickly
+trim them down to what we need. This library also includes functions that revolve around machash-related things.
 
 * read_file(filepath)
 * sensor_trim(probe)
@@ -208,12 +220,13 @@ related things.
 * determineMacHashDuration(filename)
 * getSubsetByRefSensorAndX(blockDataFile, refSensor, x)
 * convertFanchen(fanchenFileName)
+* dataInitialization() # Don't use for Fanchen's data
 
 #### ExploritoryAnalysisLib
 This library was of separate use during the project. When we were exploring forecasting
 methods, we would use some of the functions here to determine if our data was primed
-for such methods. In this library you will find functions that plot data from the MobIntel
-sensors as well as separates the data into seprate categorize.
+for such methods. In this library, you will find functions that plot data from the MobIntel
+sensors as well as separates the data into separate categories.
 
 * createLineGraph(df, date, dayByDay=False)
 * distanceCounter(dataframe)
@@ -229,8 +242,8 @@ sensors as well as separates the data into seprate categorize.
 ### Drivers
 The purpose of the drivers is to showcase the functions within the library working
 the way we expect them to. Some drivers are shorter than others and do not show each
-function working separetly. This is because some drivers have functions that utilize the specific
-usecase of other functions within it. If the parent function works as expected, we can assume the child
+function working separately. This is because some drivers have functions that utilize the specific
+use case of other functions within it. If the parent function works as expected, we can assume the child
 functions to be in working order. A list of the drivers will be presented here. The names of each driver correspond to which library it uses.
 
 * RSSITOoDistanceLibDriver
@@ -246,8 +259,8 @@ functions to be in working order. A list of the drivers will be presented here. 
 
 ### How to Use Libraries
 
-To use a library in the pythonFiles folder, we must first import the sys module, which is in standard
-library in python. Then, we must use the path.append method to add in an extra path for our 
+To use a library in the pythonFiles folder, we must first import the sys module, which is in the standard
+library in Python. Then, we must use the path.append method to add an extra path for our 
 system to search through when we are looking for libraries to use. Typically, this path will be 'pythonFiles', since it is native to the repository, and not the local device. Finally, we must call the library.
 The way that we do this is by first importing from Functionality and then call the specific library I want.
 I usually give it an alias as well. Below is an example code block of what this would look like:
@@ -268,12 +281,12 @@ import Functionality.GridLib as gl
 ```
 
 ### Commenting Convention
-All of our functions in each library will have a comment section at the beginning. This comment is meant to help developers understand what the parameter are for the function, what to expect in return, and lightly describe what is going on in the function, or explain the purpose of the function. To standardize these comments, we try our best to follow the following convention:
+All of our functions in each library will have a comment section at the beginning. This comment is meant to help developers understand what the parameters are for the function, and what to expect in return, and lightly describe what is going on in the function, or explain the purpose of the function. To standardize these comments, we try our best to follow the following convention:
 
 
 """
 
-paramemter(1-n): explain what the parameter is and the object type
+paramemter(1-n): Explain what the parameter is and the object type
 Returns: explain what we should expect after running this function
 Description: lightl explain what the function does and why we have it
 
