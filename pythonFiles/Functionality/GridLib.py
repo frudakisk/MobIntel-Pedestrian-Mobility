@@ -1057,7 +1057,7 @@ def gridLocalization(grid, df, emitter_locs):
     numSplit = [float(i) for i in split]
     numSplit[0] = int(numSplit[0])
     #Here is where I make a subset
-    subset = dfl.getSubsetByRefSensorAndX(refSensor=numSplit[0], x=numSplit[1])
+    subset = dfl.getSubsetByRefSensorAndX(blockDataFrame=df, refSensor=numSplit[0], x=numSplit[1])
 
     #now pick random row in subset
     rand_row = random.randint(0,subset.shape[0] - 1)

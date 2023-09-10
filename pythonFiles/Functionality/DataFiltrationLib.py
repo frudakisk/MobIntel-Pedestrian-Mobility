@@ -253,7 +253,7 @@ def determineMacHashDuration(filename):
     df["Duration"] = df.apply(lambda row : newDetermineDuration(row, 7), axis=1)
     return df
 
-def getSubsetByRefSensorAndX(blockDataFile, refSensor, x):
+def getSubsetByRefSensorAndX(blockDataFrame, refSensor, x):
     """
     blockData: This is a csv file that represents data captured in our block data format,
     which takes inspiration from the data that Fanchen Bao collected which can be found in 
@@ -268,8 +268,7 @@ def getSubsetByRefSensorAndX(blockDataFile, refSensor, x):
     from it where the ref_sensor column and x column match the query parameters. This function is to only
     be used on Fanchens data because mobintel data can never tell us the actual location of emitting devices
     """
-    df = pd.read_csv(blockDataFile, index_col=[0])
-    newDf = df.query("ref_sensor == @refSensor & x == @x").copy()
+    newDf = blockDataFrame.query("ref_sensor == @refSensor & x == @x").copy()
     return newDf
 
 def convertFanchen(fanchenFileName):
