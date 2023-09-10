@@ -10,24 +10,7 @@ from datetime import datetime, date, timedelta
 
 df500 = "datasets/block_500_only.csv"
 
-def read_file(filepath):
-    """
-    filepath: a parquet file that is of the form of a MobIntel sensor file
-    Returns: a pandas dataframe object
-    Description: This functions reads in relevant data from a mobIntel parquet file
-    and returns a dataframe while also keeping relevant columns of data. We also
-    change some data types to improve speed and memory cost
-    """
-    # only reads relevant columns from file, faster
-    probe = pd.read_parquet(filepath, columns=["sensorid", "machash",
-                                                "isphysical", "probingtime",
-                                                "rssi"])
-    # changes some data types to improve speed, lower memory cost
-    probe = probe.astype({"sensorid": "int8", "isphysical": "int8", "rssi": "int16"})
-
-    return probe
-
-# removes physical devices and irrelevant columns
+# removes physical devices
 def sensor_trim(probe):
     """
     probe: a pandas dataframe that has an 'isphysical' field, where it is either 0 or 1
@@ -40,6 +23,31 @@ def sensor_trim(probe):
     probe_filtered = probe_sorted.drop(columns =["isphysical"]).reset_index(drop=True) # drop irrelevant columns
     return probe_filtered
 
+def read_file(filepath):
+    """
+    filepath: a parquet file that is of the form of a MobIntel sensor file
+    Returns: a pandas dataframe object
+    Description: This functions reads in relevant data from a mobIntel parquet file
+    and returns a dataframe while also keeping relevant columns of data. We also
+    change some data types to improve speed and memory cost
+    """
+    try:
+        # only reads relevant columns
+        probe = pd.read_parquet(filepath, columns=["sensorid", "machash",
+                                                "isphysical", "probingtime",
+                                                "rssi"])
+    # if file is not parquet, catch error, and return -1
+    except: 
+        print("Incorrect file type. Please enter a parquet file")
+        return -1
+
+    # change some data types to improve speed/memory
+    probe = probe.astype({"sensorid": "int8", "isphysical": "int8", "rssi": "int16"})
+
+    # call sensor_trim to remove physical devices
+    probe = sensor_trim(probe)
+
+    return probe
 
 def mac_count(pqfile, cutoff):
     """
@@ -67,6 +75,62 @@ def mac_count(pqfile, cutoff):
                                             "rssi_x": "rssi"})
 
     return outliers_removed
+
+# This function reads in data from MobIntel, filters it, and creates a merged
+# dataframe. The grid creation code and its subsequent functions assumes it has
+# a dataframe with two columns of whatever information 
+# (in the case of MobIntel: machash and probingtime) followed by columns
+# containing RSSI values. These columns should also be named after the sensor 
+# that received these RSSI values. 
+# DO NOT USE FOR FANCHEN DATA, use convertFanchen function for that
+def dataInitialization():
+  # creates initial empty dataframe
+  all_data = pd.DataFrame()
+
+  # loop to read, filter, and merge however many data files are entered
+  while True:
+    # enter a file name
+    file_name = input("Enter file name or enter X to end: ").strip()
+
+    # if file_name = X, end loop
+    if file_name == 'X' or file_name == 'x':
+      break
+    else:
+      
+      # read in files, remove unnecessary columns, remove phyiscal devices
+      data = read_file(file_name) 
+
+      # if file is not parquet, go back to start of loop
+      if type(data) == int:
+        continue
+      
+      # remove duplicate data 
+      data = data.drop_duplicates(["machash", "sensorid", "probingtime"])
+
+      # calls mac count function - removes machashes that appear too many times
+      # (likely physical devices)
+      data = mac_count(data, 500)
+
+    # getting sensorid to rename "RSSI" column
+    sensorid = data['sensorid'][0] 
+    # if sensor is < 10, add a 0 to front (ex. 9 -> 09)
+    if sensorid < 10:
+      sensorid = '0' + str(sensorid)
+    else:
+      sensorid = str(sensorid)
+    # drop sensorid column and rename rssi column to what the sensorid is 
+    data = data.rename(columns={"rssi": sensorid}).drop(columns=["sensorid"])
+
+    # if all data is empty dataframe, set new data equal to it
+    if all_data.empty:
+      all_data = data
+    # otherwise, inner merge new data with all_data on machash and probingtime
+    # this means all_data contains only rows that have the same machash and probingtime for multiple sensors
+    else: 
+      all_data = pd.merge(all_data, data, how ="inner", on=["machash","probingtime"])
+
+  # return the final dataframe
+  return all_data
 
 def groupByMacHash(df):
     """
@@ -185,7 +249,6 @@ def determineMacHashDuration(filename):
     separately if they do not have to
     """
     df = read_file(filename)
-    df = sensor_trim(df)
     df = groupByMacHash(df)
     df["Duration"] = df.apply(lambda row : newDetermineDuration(row, 7), axis=1)
     return df
